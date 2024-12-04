@@ -246,10 +246,9 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" x:Name="btnDeleteAccount" Content="Delete My Account" Margin="70 10 70 30" FontSize="14" FontWeight="Bold"/>
+                            <Button Grid.Column="0" x:Name="btnDeleteAccount" Content="Delete My Account" Margin="70 10 70 30" FontSize="14" FontWeight="Bold" Click="btnDeleteAccount_Click"/>
                             <Button Grid.Column="1" x:Name="btnEditInfo" Content="Edit My Info" Margin="70 10 70 30" FontSize="14" FontWeight="Bold" Click="btnEditInfo_Click"/>
                             <Button Grid.Column="2" x:Name="btnUpdatePassword" Content="Update My Password" Margin="70 10 70 30" FontSize="14" FontWeight="Bold" Click="btnUpdatePassword_Click"/>
-
                         </Grid>
 
                     </Grid>

@@ -53,5 +53,12 @@ namespace DataDomain
                 return roleList;
             }
         }
+        public string FormattedReactivationDate
+        {
+            get
+            {
+                return ReactivationDate?.ToString("MM/dd/yyyy");
+            }
+        }
     }
 }

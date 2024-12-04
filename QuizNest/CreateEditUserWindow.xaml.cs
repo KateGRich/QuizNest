@@ -21,26 +21,26 @@ namespace QuizNestPresentation
     /// </summary>
     public partial class CreateEditUserWindow : Window
     {
-        private UserVM? _user;
+        private UserVM? _adminUser;
         private IUserManager _userManager;
 
-        private UserVM? _userEdit;
+        private UserVM? _editUser;
 
         public CreateEditUserWindow(UserVM user, IUserManager userManager, bool isEditingSelf)
         {
             if(isEditingSelf == false)
             {
                 // For Creating New Users - Admin
-                this._user = user;
+                this._adminUser = user;
                 this._userManager = userManager;
-                this._userEdit = null;
+                this._editUser = null;
             }
             else
             {
                 // For Editting Your Own Info - All Users
-                this._user = null;
+                this._adminUser = null;
                 this._userManager = userManager;
-                this._userEdit = user;
+                this._editUser = user;
             }
 
             InitializeComponent();
@@ -49,9 +49,9 @@ namespace QuizNestPresentation
         // For Editing a Current User's Info - Admin
         public CreateEditUserWindow(UserVM user, IUserManager userManager, UserVM userEdit)
         {
-            this._user = user;
+            this._adminUser = user;
             this._userManager = userManager;
-            this._userEdit = userEdit; // User whose info is being editted.
+            this._editUser = userEdit; // User whose info is being editted.
 
             InitializeComponent();
         }
@@ -60,10 +60,16 @@ namespace QuizNestPresentation
         {
             txtUpdateEmail.Visibility = Visibility.Hidden;
 
-            if(_user == null && _userEdit != null)
+            if(_adminUser == null && _editUser != null)
             {
                 // User is editing their own info.
                 txtUpdateEmail.Visibility= Visibility.Visible;
+
+                if(_editUser.Roles.Contains("Admin"))
+                {
+                    // Admins can use the Users tab to update their own email.
+                    txtUpdateEmail.Text = "If you need to update your email, please do so through the 'Users' tab!";
+                }
 
                 lblRoles.Visibility = Visibility.Hidden;
                 dkpRoles.Visibility = Visibility.Hidden;
@@ -71,31 +77,31 @@ namespace QuizNestPresentation
                 stkActive.Visibility = Visibility.Hidden;
                 stkActive.IsEnabled = false;
 
-                txtGivenName.Text = _userEdit.GivenName;
-                txtFamilyName.Text = _userEdit.FamilyName;
-                txtEmail.Text = _userEdit.Email;
+                txtGivenName.Text = _editUser.GivenName;
+                txtFamilyName.Text = _editUser.FamilyName;
+                txtEmail.Text = _editUser.Email;
                 txtEmail.IsEnabled = false;
-                txtPhoneNumber.Text = _userEdit.PhoneNumber;
+                txtPhoneNumber.Text = _editUser.PhoneNumber;
 
                 winCreateEditUser.Title = "Edit My Information";
                 btnCreateEditUser.Content = "Save";
             }
-            else if(_user != null && _userEdit != null)
+            else if(_adminUser != null && _editUser != null)
             {
                 // Admin is editing an existing User's info.
 
-                winCreateEditUser.Title = "Edit " + _userEdit.Name + "'s Information";
+                winCreateEditUser.Title = "Edit " + _editUser.Name + "'s Information";
                 btnCreateEditUser.Content = "Save";
 
-                txtGivenName.Text = _userEdit.GivenName;
-                txtFamilyName.Text = _userEdit.FamilyName;
-                txtEmail.Text = _userEdit.Email;
-                txtPhoneNumber.Text = _userEdit.PhoneNumber;
+                txtGivenName.Text = _editUser.GivenName;
+                txtFamilyName.Text = _editUser.FamilyName;
+                txtEmail.Text = _editUser.Email;
+                txtPhoneNumber.Text = _editUser.PhoneNumber;
 
-                if(_userEdit.Roles.Contains(chkAdmin.Content.ToString()))
+                if(_editUser.Roles.Contains(chkAdmin.Content.ToString()))
                 {
                     chkAdmin.IsChecked = true;
-                    if(_userEdit.UserID == _user.UserID)
+                    if(_editUser.UserID == _adminUser.UserID)
                     {
                         // Admin is updating themselves through this form.
                         chkAdmin.IsEnabled = false;
@@ -103,24 +109,24 @@ namespace QuizNestPresentation
                         dtpkReactivationDate.IsEnabled = false;
                     }
                 }
-                if(_userEdit.Roles.Contains(chkQuizMaker.Content.ToString()))
+                if(_editUser.Roles.Contains(chkQuizMaker.Content.ToString()))
                 {
                     chkQuizMaker.IsChecked = true;
                 }
-                if(_userEdit.Roles.Contains(chkQuizTaker.Content.ToString()))
+                if(_editUser.Roles.Contains(chkQuizTaker.Content.ToString()))
                 {
                     chkQuizTaker.IsChecked = true;
                 }
 
                 stkActive.Visibility = Visibility.Visible;
-                if(_userEdit.Active == true)
+                if(_editUser.Active == true)
                 {
                     chkActive.IsChecked = true;
                 }
                 else
                 {
                     chkActive.IsChecked = false;
-                    dtpkReactivationDate.SelectedDate = _userEdit.ReactivationDate;
+                    dtpkReactivationDate.SelectedDate = _editUser.ReactivationDate;
                 }
             }
             else
@@ -176,7 +182,7 @@ namespace QuizNestPresentation
 
 
             List<string> roles = new List<string>();
-            if(_user != null)
+            if(_adminUser != null)
             {
                 if(chkAdmin.IsChecked == false && chkQuizMaker.IsChecked == false && chkQuizTaker.IsChecked == false)
                 {
@@ -205,7 +211,7 @@ namespace QuizNestPresentation
             string email = txtEmail.Text;
             string? phoneNumber = txtPhoneNumber.Text;
 
-            if(_user == null && _userEdit != null)
+            if(_adminUser == null && _editUser != null)
             {
                 // User is editing their own info.
                 bool newActive = true;
@@ -213,7 +219,7 @@ namespace QuizNestPresentation
 
                 try
                 {
-                    bool result = _userManager.EditUserInformation(givenName, familyName, email, phoneNumber, newActive, newReactivationDate, _userEdit, _userEdit.Roles);
+                    bool result = _userManager.EditUserInformation(givenName, familyName, email, phoneNumber, newActive, newReactivationDate, _editUser, _editUser.Roles);
                     if(result == false)
                     {
                         throw new Exception("Update Failed...");
@@ -231,7 +237,7 @@ namespace QuizNestPresentation
                     MessageBox.Show(message);
                 }
             }
-            else if(_user != null && _userEdit != null)
+            else if(_adminUser != null && _editUser != null)
             {
                 // Admin is editing an existing User
                 
@@ -243,7 +249,7 @@ namespace QuizNestPresentation
                     newActive = false;
 
                     newReactivationDate = dtpkReactivationDate.SelectedDate;
-                    if(newReactivationDate < DateTime.Now)
+                    if(newReactivationDate <= DateTime.Now)
                     {
                         MessageBox.Show("Invalid Reactivation Date...");
                         dtpkReactivationDate.Focus();
@@ -257,7 +263,7 @@ namespace QuizNestPresentation
 
                 try
                 {
-                    bool result = _userManager.EditUserInformation(givenName, familyName, email, phoneNumber, newActive, newReactivationDate, _userEdit, roles);
+                    bool result = _userManager.EditUserInformation(givenName, familyName, email, phoneNumber, newActive, newReactivationDate, _editUser, roles);
                     if(result == false)
                     {
                         throw new Exception("Update Failed...");

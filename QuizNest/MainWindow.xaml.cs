@@ -2,6 +2,7 @@
 using DataAccessFakes;
 using DataDomain;
 using LogicLayer;
+using Microsoft.Win32;
 using QuizNestPresentation;
 using System.Text;
 using System.Windows;
@@ -50,6 +51,7 @@ namespace QuizNest
             resetLogIn();
         }
 
+        // Log In & Out Methods
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
             // Test with Data Fake
@@ -80,8 +82,17 @@ namespace QuizNest
                 // Verify the user's account.
                 _user = _userManager.LogInUser(email, password);
 
-                statMessage.Content = "Welcome, " + _user.GivenName + "!";
-                // statMessage.Content = $"Welcome, {_user.GivenName}!"; <-- Example of string interpolation
+                // Force New User to Reset their Password
+                if(password == "P@ssw0rd")
+                {
+                    var updatePasswordWindow = new UpdatePasswordWindow(_user, _userManager, isNewUser : true);
+                    if(updatePasswordWindow.ShowDialog() == false)
+                    {
+                        return;
+                    }
+                }
+
+                statMessage.Content = $"Welcome, {_user.GivenName}!"; // String interpolation
 
                 toggleLogInControls(false);
 
@@ -110,7 +121,8 @@ namespace QuizNest
             resetLogIn();
         }
 
-        // Admin - User Methods
+
+        // User Tab Methods - Admin Only
         private void grdUsers_Loaded(object sender, RoutedEventArgs e)
         {
             showAllUsers();
@@ -139,12 +151,8 @@ namespace QuizNest
                     {
                         // If the Admin is updating their own information through this form,
                         // refresh their information on the Profile tab.
-                        _user = (UserVM)_userManager.GetUserByEmail(_user.Email);
+                        _user = _userManager.GetUserByUserID(_user.UserID);
                         _user.Roles = _userManager.GetUserRoles(_user.UserID);
-
-                        //txtGivenName.Text = _user.GivenName;
-                        //txtFamilyName.Text = _user.FamilyName;
-                        //txtPhoneNumber.Text = _user.PhoneNumber;
                     }
 
                     _users = _userManager.GetAllUsers();
@@ -158,30 +166,196 @@ namespace QuizNest
             
         }
 
-        // Quiz Methods
-        
+
+        // Quiz Tab Methods
+        private void btnCreateNewQuiz_Click(object sender, RoutedEventArgs e)
+        {
+            var createQuizWindow = new CreateEditQuizWindow();
+            createQuizWindow.ShowDialog();
+        }
+        private void btnEditQuiz_Click(object sender, RoutedEventArgs e)
+        {
+            if(grdMyQuizzes.SelectedItem != null)
+            {
+                var editQuizWindow = new CreateEditQuizWindow();
+                editQuizWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("You must select a quiz in order to edit one.", "No Selection");
+            }
+        }
 
 
 
+        private void btnLeaderboard_Click(object sender, RoutedEventArgs e)
+        {
+            if(grdAllQuizzes.SelectedItem != null)
+            {
+                var quiz = grdAllQuizzes.SelectedItem as Quiz;
+
+                var leaderboardWindow = new LeaderboardWindow(_quizRecordManager, quiz);
+                leaderboardWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("You must select a quiz in order to view a leaderboard.", "No Selection");
+            }
+        }
+        private void btnTakeQuiz_Click(object sender, RoutedEventArgs e)
+        {
+            var takeQuizWindow = new TakeQuizWindow();
+            takeQuizWindow.ShowDialog();
+        }
 
 
 
+        private void btnRetakeQuiz_Click(object sender, RoutedEventArgs e)
+        {
+            if(grdTakenQuizzes.SelectedItem != null)
+            {
+                var reviewRetakeWindow = new ReviewRetakeWindow();
+                reviewRetakeWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("You must select a quiz in order to retake one.", "No Selection");
+            }
+        }
 
 
 
+        // Profile Tab Methods
+        private void tabProfile_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtGivenName.Text = _user.GivenName;
+            txtFamilyName.Text = _user.FamilyName;
+            txtUserEmail.Text = _user.Email;
+            txtPhoneNumber.Text = _user.PhoneNumber;
+            txtRoles.Text = _user.RoleList;
+        }
+        private void btnEditInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var createEditUserWindow = new CreateEditUserWindow(_user, _userManager, true);
+            var result = createEditUserWindow.ShowDialog();
+            if(result == true)
+            {
+                // Refresh their information on the Profile tab.
+                _user = (UserVM)_userManager.GetUserByEmail(_user.Email);
+                _user.Roles = _userManager.GetUserRoles(_user.UserID);
+
+                txtGivenName.Text = _user.GivenName;
+                txtFamilyName.Text = _user.FamilyName;
+                txtPhoneNumber.Text = _user.PhoneNumber;
+            }
+        }
+        private void btnUpdatePassword_Click(object sender, RoutedEventArgs e)
+        {
+            var updatePasswordWindow = new UpdatePasswordWindow(_user, _userManager);
+            updatePasswordWindow.ShowDialog();
+        }
+        private void btnDeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to delete your account?", "Delete Account?",
+                                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if(result == MessageBoxResult.Yes)
+            {
+                // Save the current user into a new variable.
+                UserVM user = _user;
+
+                // Force log-out the current user.
+                this.btnLogOut_Click(sender, e);
+
+                // Let them know their account has been deleted/deactivated successfully.
+                MessageBox.Show("Your account was successfully deleted!");
+
+                // Reuse this method to explicitly save their current info, but set their Active status to false & their ReactivationDate to null.
+                _userManager.EditUserInformation(user.GivenName, user.FamilyName, user.Email, user.PhoneNumber, false, null, user, user.Roles);
+            }
+        }
 
 
 
+        // Chat Tab Methods
+        private void btnViewMessages_Click(object sender, RoutedEventArgs e)
+        {
+            if(grdMyChats.SelectedItem != null)
+            {
+                var viewSendMessagesWindow = new ViewSendMessagesWindow();
+                viewSendMessagesWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("You must select a chat in order to view messages.", "No Selection");
+            }
+        }
 
 
+        // Tab Set Selection Change Methods
+        private void tabSetMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(e.Source is TabControl)
+            {
+                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
+                switch(tabItem)
+                {
+                    case "Users":
+                        break;
+                    case "Quizzes":
+                        break;
+                    case "My Profile":
+                        break;
+                    case "Chat With Admin":
+                        break;
+                    case "Chats":
+                        break;
+                }
+            }
+        }
+        private void tabSetQuizzes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(e.Source is TabControl)
+            {
+                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
+                switch(tabItem)
+                {
+                    case "My Quizzes":
+                        showCreatedQuizzes();
+                        break;
+                    case "All Quizzes":
+                        showActiveQuizzes();
+                        break;
+                    case "Taken Quizzes":
+                        showTakenQuizzes();
+                        break;
+                }
+            }
+        }
+        private void tabSetChats_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(e.Source is TabControl)
+            {
+                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
-
-
-
-
-
+                switch(tabItem)
+                {
+                    case "Start New":
+                        break;
+                    case "My Chats":
+                        if(_user.Roles.Contains("Admin"))
+                        {
+                            showReceivedChats();
+                        }
+                        else
+                        {
+                            showStartedChats();
+                        }
+                        break;
+                }
+            }
+        }
 
 
         // Helper Methods
@@ -450,179 +624,6 @@ namespace QuizNest
                 string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
                 MessageBox.Show(message);
             }
-        }
-
-
-
-
-
-        private void tabSetMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(e.Source is TabControl)
-            {
-                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
-
-                switch(tabItem)
-                {
-                    case "Users":
-                        break;
-                    case "Quizzes":
-                        break;
-                    case "My Profile":
-                        break;
-                    case "Chat With Admin":
-                        break;
-                    case "Chats":
-                        break;
-                }
-            }
-        }
-
-        private void tabSetQuizzes_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(e.Source is TabControl)
-            {
-                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
-
-                switch(tabItem)
-                {
-                    case "My Quizzes":
-                        showCreatedQuizzes();
-                        break;
-                    case "All Quizzes":
-                        showActiveQuizzes();
-                        break;
-                    case "Taken Quizzes":
-                        showTakenQuizzes();
-                        break;
-                }
-            }
-        }
-
-        private void tabSetChats_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(e.Source is TabControl)
-            {
-                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
-
-                switch(tabItem)
-                {
-                    case "Start New":
-                        break;
-                    case "My Chats":
-                        if(_user.Roles.Contains("Admin"))
-                        {
-                            showReceivedChats();
-                        }
-                        else
-                        {
-                            showStartedChats();
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void btnCreateNewQuiz_Click(object sender, RoutedEventArgs e)
-        {
-            var createQuizWindow = new CreateEditQuizWindow();
-            createQuizWindow.ShowDialog();
-        }
-
-        private void btnEditQuiz_Click(object sender, RoutedEventArgs e)
-        {
-            if(grdMyQuizzes.SelectedItem != null)
-            {
-                var editQuizWindow = new CreateEditQuizWindow();
-                editQuizWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("You must select a quiz in order to edit one.", "No Selection");
-            }
-        }
-
-        private void btnLeaderboard_Click(object sender, RoutedEventArgs e)
-        {
-            if(grdAllQuizzes.SelectedItem != null)
-            {
-                var quiz = grdAllQuizzes.SelectedItem as Quiz;
-
-                var leaderboardWindow = new LeaderboardWindow(_quizRecordManager, quiz);
-                leaderboardWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("You must select a quiz in order to view a leaderboard.", "No Selection");
-            }
-        }
-
-        private void btnTakeQuiz_Click(object sender, RoutedEventArgs e)
-        {
-            var takeQuizWindow = new TakeQuizWindow();
-            takeQuizWindow.ShowDialog();
-        }
-
-        private void btnRetakeQuiz_Click(object sender, RoutedEventArgs e)
-        {
-            if(grdTakenQuizzes.SelectedItem != null)
-            {
-                var reviewRetakeWindow = new ReviewRetakeWindow();
-                reviewRetakeWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("You must select a quiz in order to retake one.", "No Selection");
-            }
-        }
-
-        private void btnViewMessages_Click(object sender, RoutedEventArgs e)
-        {
-            if(grdMyChats.SelectedItem != null)
-            {
-                var viewSendMessagesWindow = new ViewSendMessagesWindow();
-                viewSendMessagesWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("You must select a chat in order to view messages.", "No Selection");
-            }
-        }
-
-
-
-
-
-
-        // Profile Tab Methods
-        private void tabProfile_GotFocus(object sender, RoutedEventArgs e)
-        {
-            txtGivenName.Text = _user.GivenName;
-            txtFamilyName.Text = _user.FamilyName;
-            txtUserEmail.Text = _user.Email;
-            txtPhoneNumber.Text = _user.PhoneNumber;
-            txtRoles.Text = _user.RoleList;
-        }
-        private void btnEditInfo_Click(object sender, RoutedEventArgs e)
-        {
-            var createEditUserWindow = new CreateEditUserWindow(_user, _userManager, true);
-            var result = createEditUserWindow.ShowDialog();
-            if(result == true)
-            {
-                // Refresh their information on the Profile tab.
-                _user = (UserVM)_userManager.GetUserByEmail(_user.Email);
-                _user.Roles = _userManager.GetUserRoles(_user.UserID);
-
-                txtGivenName.Text = _user.GivenName;
-                txtFamilyName.Text = _user.FamilyName;
-                txtPhoneNumber.Text = _user.PhoneNumber;
-            }
-        }
-
-        private void btnUpdatePassword_Click(object sender, RoutedEventArgs e)
-        {
-            var updatePasswordWindow = new UpdatePasswordWindow();
-            updatePasswordWindow.ShowDialog();
         }
     }
 }

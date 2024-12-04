@@ -273,5 +273,76 @@ namespace DataAccessLayer
 
             return rowsAffected;
         }
+
+        public UserVM SelectUserByUserID(int userID)
+        {
+            UserVM? user = null;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_user_by_userID", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@UserID", SqlDbType.Int);
+            cmd.Parameters["@UserID"].Value = userID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                if(reader.HasRows)
+                {
+                    reader.Read();
+                    user = new UserVM()
+                    {
+                        UserID = reader.GetInt32(0),
+                        GivenName = reader.GetString(1),
+                        FamilyName = reader.GetString(2),
+                        Email = reader.GetString(3),
+                        PhoneNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        ReactivationDate = reader.IsDBNull(5) ? null : reader.GetDateTime(5),
+                        Active = reader.GetBoolean(6)
+                    };
+                }
+                else
+                {
+                    throw new ArgumentException("User Record Not Found...");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No Record Found...", ex);
+            }
+            return user;
+        }
+
+        public int UpdateUserPasswordHash(string email, string currentPasswordHash, string newPasswordHash)
+        {
+            int result = 0;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_update_user_passwordHash", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 250);
+            cmd.Parameters.Add("@currentPasswordHash", SqlDbType.NVarChar, 100);
+            cmd.Parameters.Add("@newPasswordHash", SqlDbType.NVarChar, 100);
+
+            cmd.Parameters["@Email"].Value = email;
+            cmd.Parameters["@currentPasswordHash"].Value = currentPasswordHash;
+            cmd.Parameters["@newPasswordHash"].Value = newPasswordHash;
+
+            try
+            {
+                conn.Open();
+                result = cmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return result;
+        }
     }
 }

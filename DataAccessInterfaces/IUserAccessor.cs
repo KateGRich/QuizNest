@@ -15,11 +15,11 @@ namespace DataAccessInterfaces
         List<UserVM> SelectAllUsers();
         int InsertNewUser(string givenName, string familyName, string email, string phoneNumber);
         int InserNewUserRole(int userID, string roleID);
-
-        // I could only get this to work without checking the old values.
-        // More comments in the UserAccessor implementation.
         int UpdateUserInformation(int userID, string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
-                            bool newActive, DateTime? newReactivationDate);
+                            bool newActive, DateTime? newReactivationDate); // I could only get this to work without checking the old values.
+                                                                            // More comments in the UserAccessor implementation.
         int DeleteUserRole(int userID, string roleID);
+        UserVM SelectUserByUserID(int userID);
+        int UpdateUserPasswordHash(string email, string currentPasswordHash, string newPasswordHash);
     }
 }

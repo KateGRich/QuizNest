@@ -105,11 +105,26 @@ namespace LogicLayer
             {
                 if(VerifyUser(email, password))
                 {
+                    // Account exists & is Active.
                     userVM = (UserVM)GetUserByEmail(email);
                     if(userVM != null)
                     {
                         userVM.Roles = GetUserRoles(userVM.UserID);
                     }
+                }
+                else if((userVM = (UserVM)GetUserByEmail(email)).Active == false)
+                {
+                    // Account exists, but is not Active.
+                    string message = "Your account is no longer active..." + "\n\n";
+                    if(userVM.ReactivationDate == null)
+                    {
+                        message += "Please speak directly with a system admin if you'd like to reactivate it.";
+                    }
+                    else
+                    {
+                        message += "Your account will become active again on " + userVM.FormattedReactivationDate + ".";
+                    }
+                    throw new ApplicationException(message);
                 }
                 else
                 {
@@ -246,6 +261,45 @@ namespace LogicLayer
             }
 
             return updated;
+        }
+
+        public UserVM GetUserByUserID(int userID)
+        {
+            UserVM? user = null;
+
+            try
+            {
+                user = _userAccessor.SelectUserByUserID(userID);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Log In Failed", ex);
+            }
+
+            return user;
+        }
+
+        public bool UpdatePassword(string email, string currentPassword, string newPassword)
+        {
+            bool result = false;
+
+            // Hash the passwords.
+            currentPassword = HashSHA256(currentPassword);
+            newPassword = HashSHA256(newPassword);
+
+            try
+            {
+                result = (1 == _userAccessor.UpdateUserPasswordHash(email, currentPassword, newPassword));
+                if(!result)
+                {
+                    throw new ApplicationException("You must enter your correct current password.");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Your Password Update was Unsuccessful...", ex);
+            }
+            return result;
         }
     }
 }

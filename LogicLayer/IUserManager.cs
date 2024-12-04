@@ -18,8 +18,7 @@ namespace LogicLayer
         bool AddNewUser(string givenName, string familyName, string email, string phoneNumber, List<string> roles);
         bool EditUserInformation(string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
                                 bool newActive, DateTime? newReactivationDate, UserVM userEdit, List<string> newRoles);
-
-
-        //public bool UpdatePassword(string email, string oldPassword, string newPassword);
+        UserVM GetUserByUserID(int userID);
+        public bool UpdatePassword(string email, string currentPassword, string newPassword);
     }
 }
