@@ -1,0 +1,94 @@
+﻿using DataAccessInterfaces;
+using DataDomain;
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataAccessLayer
+{
+    public class QuizRecordAccessor : IQuizRecordAccessor
+    {
+        public List<QuizRecordVM> SelectQuizLeaderboard(int quizID)
+        {
+            List<QuizRecordVM> leaderboard = new List<QuizRecordVM>();
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_quiz_leaderboard", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
+            cmd.Parameters["@QuizID"].Value = quizID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    leaderboard.Add(new QuizRecordVM()
+                    {
+                        QuizRecordID = reader.GetInt32(0),
+                        AttemptTypeID = reader.GetString(1),
+                        UserID = reader.GetInt32(2),
+                        GivenName = reader.GetString(3),
+                        FamilyName = reader.GetString(4),
+                        QuizID = reader.GetInt32(5),
+                        QuizName = reader.GetString(6),
+                        Score = reader.GetDecimal(7),
+                        DateTaken = reader.GetDateTime(8),
+                        IsPublic = reader.GetBoolean(9)
+                    });
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return leaderboard;
+        }
+
+        public List<QuizRecordVM> SelectQuizzesByTaker(int userID)
+        {
+            List<QuizRecordVM> takenQuizzes = new List<QuizRecordVM>();
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_quizzes_by_taker", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@UserID", SqlDbType.Int);
+            cmd.Parameters["@UserID"].Value = userID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    takenQuizzes.Add(new QuizRecordVM()
+                    {
+                        QuizRecordID = reader.GetInt32(0),
+                        QuizID = reader.GetInt32(1),
+                        QuizTopicID = reader.GetString(2),
+                        QuizName = reader.GetString(3),
+                        Score = reader.GetDecimal(4),
+                        AttemptTypeID = reader.GetString(5),
+                        DateTaken = reader.GetDateTime(6)
+                    });
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return takenQuizzes;
+        }
+    }
+}

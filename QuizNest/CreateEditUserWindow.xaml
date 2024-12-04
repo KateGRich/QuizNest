@@ -1,0 +1,62 @@
+﻿<Window x:Class="QuizNestPresentation.CreateEditUserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuizNestPresentation"
+        mc:Ignorable="d"
+        Title="Create a New User Account" x:Name="winCreateEditUser" Height="500" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="winCreateEditUser_Loaded">
+    <Grid> <!-- START Page Grid - Window is for Creating or Editing User Data -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="90"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.ColumnSpan="2" Grid.Row="0" x:Name="lblGivenName" Content="Given Name:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="0" x:Name="txtGivenName" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+
+        <Label Grid.ColumnSpan="2" Grid.Row="1" x:Name="lblFamilyName" Content="Family Name:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="1" x:Name="txtFamilyName" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+
+        <Label Grid.ColumnSpan="2" Grid.Row="2" x:Name="lblEmail" Content="Email:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="2" x:Name="txtEmail" Margin="70 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+
+        <Label Grid.ColumnSpan="2" Grid.Row="3" x:Name="lblPhoneNumber" Content="Phone Number:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="3" x:Name="txtPhoneNumber" Margin="125 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+
+        <Label Grid.Column="0" Grid.Row="4" x:Name="lblRoles" Content="Roles:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <DockPanel Grid.ColumnSpan="2" Grid.Row="4" x:Name="dkpRoles" VerticalAlignment="Center" Margin="80 0 20 0">
+            <CheckBox x:Name="chkQuizTaker" Content="Quiz Taker"  FontSize="12" Margin="10"/>
+            <CheckBox x:Name="chkQuizMaker" Content="Quiz Maker" FontSize="12" Margin="10"/>
+            <CheckBox x:Name="chkAdmin" Content="Admin" FontSize="12" Margin="10"/>
+        </DockPanel>
+
+        <StackPanel Grid.ColumnSpan="2" Grid.Row="5" x:Name="stkActive">
+            <DockPanel>
+                <Label x:Name="lblActive" Content="Active Status:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+                <CheckBox x:Name="chkActive" VerticalAlignment="Center" Margin="10"/>
+            </DockPanel>
+            <DockPanel>
+                <Label x:Name="lblReactivationDate" Content="Reactivation Date:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+                <DatePicker x:Name="dtpkReactivationDate" VerticalAlignment="Center" Margin="10"/>
+            </DockPanel>
+        </StackPanel>
+
+        <TextBlock Grid.Row="4" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtUpdateEmail" VerticalAlignment="Center" TextWrapping="Wrap" Margin="50 0">
+            If you need to update your email, please reach out to an Admin in the 'Chat with Admin' tab!
+        </TextBlock>
+
+        <Button Grid.Row="7" Grid.Column="0" x:Name="btnCancel" Content="Cancel" Margin="30 10" FontSize="14" FontWeight="Bold" Click="btnCancel_Click"/>
+        <Button Grid.Row="7" Grid.Column="1" x:Name="btnCreateEditUser" Content="Create" Margin="30 10" FontSize="14" FontWeight="Bold" Click="btnCreateEditUser_Click"/>
+    </Grid> <!-- END Page Grid -->
+</Window>

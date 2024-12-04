@@ -1,0 +1,338 @@
+﻿<Window x:Class="QuizNest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuizNest"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="QuizNest" Height="600" Width="900" Loaded="Window_Loaded" ResizeMode="CanMinimize">
+    
+    <Grid> <!-- START Outer Page Grid -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0"> <!-- START Log Out Button Grid -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1" x:Name="btnLogOut" Content="Log Out" Margin="0 20 25 0" FontSize="14" FontWeight="Bold" Click="btnLogOut_Click"/>
+        </Grid> <!-- END Log Out Button Grid -->
+
+        <Grid Grid.Row="1"> <!-- START Log In Controls Grid -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Column="1" Grid.Row="1" x:Name="lblEmail" Content="Email:" VerticalContentAlignment="Center" Margin="25 0 0 0" FontSize="14" FontWeight="Bold"/>
+            <TextBox Grid.Column="1" Grid.Row="1" x:Name="txtEmail" Margin="100 10 20 10" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+
+            <Label Grid.Column="1" Grid.Row="2" x:Name="lblPassword" Content="Password:" VerticalContentAlignment="Center" Margin="25 0 0 0" FontSize="14" FontWeight="Bold"/>
+            <PasswordBox Grid.Column="1" Grid.Row="2" x:Name="pwdPassword" Margin="100 10 20 10" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+
+            <Button Grid.Column="1" Grid.Row="3" x:Name="btnLogIn" Content="Log In" FontSize="14" FontWeight="Bold" Margin="175 10 100 10" Click="btnLogIn_Click"/>
+        </Grid> <!-- END Log In Controls Grid -->
+
+        <StackPanel Grid.Row="1" x:Name="tabContainer"> <!-- START Tab Controls -->
+            <TabControl x:Name="tabSetMain" Height="500" SelectionChanged="tabSetMain_SelectionChanged">
+                <TabItem x:Name="tabUsers" Header="Users"> <!-- START Tab For User List - Admin Only -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="125"/>
+                        </Grid.ColumnDefinitions>
+
+                        <DataGrid Grid.Row="1" Grid.RowSpan="3" x:Name="grdUsers" Margin="20" SelectionMode="Single" IsReadOnly="True"
+                                  Loaded="grdUsers_Loaded" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserReorderColumns="False" CanUserResizeRows="False">
+                            <DataGrid.Columns>
+                                <!--
+                                    Binding, so I can specify the order in which data displays.
+                                    I decide, not the system.
+                                -->
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                <DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
+                                <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}"/>
+                                <DataGridCheckBoxColumn Header="Active" Binding="{Binding Active}"/>
+                                <DataGridTextColumn Header="Roles" Binding="{Binding RoleList}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Grid.Column="1"> <!-- START Buttons for Creating & Editing Users -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <Button Grid.Row="0" x:Name="btnCreateNewUser" Content="Create New" Margin="5 125 20 50" FontSize="14" FontWeight="Bold" Click="btnCreateNewUser_Click"/>
+                            <Button Grid.Row="1" x:Name="btnEditUser" Content="Edit Details" Margin="5 50 20 125" FontSize="14" FontWeight="Bold" Click="btnEditUser_Click"/>
+                        </Grid> <!-- END Buttons for Creating & Editing Users -->
+                    </Grid>
+                </TabItem> <!-- END Tab For User List - Admin Only -->
+
+                <TabItem x:Name="tabQuizzes" Header="Quizzes"> <!-- START Tab for Quizzes -->
+                    <TabControl x:Name="tabSetQuizzes" Height="450" SelectionChanged="tabSetQuizzes_SelectionChanged" TabStripPlacement="Left">
+                        <TabItem x:Name="tabAllQuizzes" Header="All Quizzes"> <!-- START Tab for All Quizzes - Quiz Taker can Take Quizzes from here -->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="50"/>
+                                </Grid.RowDefinitions>
+
+                                <DataGrid Grid.Column="0" x:Name="grdAllQuizzes" Margin="20" CanUserReorderColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True" SelectionMode="Single">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                        <DataGridTextColumn Header="Topic" Binding="{Binding QuizTopicID}" Width="150"/>
+                                        <DataGridTextColumn Header="Questions" Binding="{Binding NumberOfQuestions}"/>
+                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="200">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style>
+                                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Creator" Binding="{Binding CreatorName}"/>
+                                        <DataGridTextColumn Header="Date Created" Binding="{Binding FormattedDate}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <Grid Grid.Row="1"> <!-- START Buttons for Viewing a Quiz Leaderboard & Taking Quizzes -->
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Grid.Column="0" x:Name="btnLeaderboard" Content="View Leaderboard" Margin="50 0 50 20" FontSize="14" FontWeight="Bold" Click="btnLeaderboard_Click"/>
+                                    <Button Grid.Column="1" x:Name="btnTakeQuiz" Content="Take Quiz" Margin="50 0 50 20" FontSize="14" FontWeight="Bold" Click="btnTakeQuiz_Click"/>
+                                </Grid> <!-- END Buttons for Viewing a Quiz Leaderboard & Taking Quizzes -->
+                            </Grid>
+                        </TabItem> <!-- END Tab for All Quizzes -->
+
+                        <TabItem x:Name="tabMyQuizzes" Header="My Quizzes"> <!-- START Inner Tab - Quiz Maker -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="125"/>
+                                </Grid.ColumnDefinitions>
+
+                                <DataGrid Grid.Column="0" x:Name="grdMyQuizzes" Margin="20" CanUserReorderColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True" SelectionMode="Single">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                        <DataGridTextColumn Header="Topic" Binding="{Binding QuizTopicID}" Width="*"/>
+                                        <DataGridTextColumn Header="Questions" Binding="{Binding NumberOfQuestions}"/>
+                                        <DataGridTextColumn Header="Date Created" Binding="{Binding FormattedDate}"/>
+                                        <DataGridCheckBoxColumn Header="Active" Binding="{Binding Active}" Width="50"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <Grid Grid.Column="1"> <!-- START Buttons for Creating & Editing Quizzes -->
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Button Grid.Row="0" x:Name="btnCreateNewQuiz" Content="Create New" Margin="5 125 20 50" FontSize="14" FontWeight="Bold" Click="btnCreateNewQuiz_Click"/>
+                                    <Button Grid.Row="1" x:Name="btnEditQuiz" Content="Edit Details" Margin="5 50 20 125" FontSize="14" FontWeight="Bold" Click="btnEditQuiz_Click"/>
+                                </Grid> <!-- END Buttons for Creating & Editing Quizzes -->
+                            </Grid>
+                        </TabItem> <!-- END Inner Tab - Quiz Maker -->
+
+                        <TabItem x:Name="tabTakenQuizzes" Header="Taken Quizzes"> <!-- START Inner Tab - Taken Quizzes for Quiz Taker -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="135"/>
+                                </Grid.ColumnDefinitions>
+
+                                <DataGrid Grid.Column="0" x:Name="grdTakenQuizzes" Margin="20" CanUserReorderColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True" SelectionMode="Single">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Quiz Name" Binding="{Binding QuizName}" Width="*"/>
+                                        <DataGridTextColumn Header="Topic" Binding="{Binding QuizTopicID}" Width="*"/>
+                                        <DataGridTextColumn Header="Score" Binding="{Binding FormattedScore}"/>
+                                        <DataGridTextColumn Header="Attempt Type" Binding="{Binding AttemptTypeID}" Width="*"/>
+                                        <DataGridTextColumn Header="Date Taken" Binding="{Binding FormattedDate}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <!-- Show this if the User has not taken any Quizzes yet. -->
+                                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtNoTakenQuizzes" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                                    <Bold>No Quizzes found.</Bold> 
+                                    <LineBreak/> <LineBreak/> 
+                                    You have not taken any quizzes yet.
+                                    <LineBreak/>
+                                    Go to the 'All Quizzes' tab to take one now!
+                                </TextBlock>
+
+                                <Grid Grid.Column="1"> <!-- START Buttons for Retaking Quizzes & Reviewing Answers -->
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Button Grid.Row="0" x:Name="btnRetakeQuiz" Content="Retake Quiz" Margin="5 125 10 50" FontSize="14" FontWeight="Bold" Click="btnRetakeQuiz_Click"/>
+                                    <Button Grid.Row="1" x:Name="btnReviewAnswers" Content="Review Answers" Margin="5 50 10 125" FontSize="14" FontWeight="Bold"/>
+                                </Grid> <!-- END Buttons for Retaking Quizzes & Reviewing Answers -->
+                            </Grid>
+                        </TabItem> <!-- END Inner Tab - Taken Quizzes for Quiz Taker -->
+                    </TabControl>
+                </TabItem> <!-- END Tab for Quizzes -->
+
+
+                <TabItem x:Name="tabProfile" Header="My Profile" GotFocus="tabProfile_GotFocus"> <!-- START Tab for User Profile -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="80"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <DockPanel Grid.Row="0" Grid.Column="0" Margin="50 0 0 0" >
+                                <Label x:Name="lblGivenName" Content="Given Name:" VerticalContentAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                <TextBlock x:Name="txtGivenName" Text="Luanne" Margin="10" VerticalAlignment="Center" FontSize="20"/>
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="1" Grid.Column="0" Margin="50 0 0 0" >
+                                <Label x:Name="lblFamilyName" Content="Family Name:" VerticalContentAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                <TextBlock x:Name="txtFamilyName" Text="Platter" Margin="10" VerticalAlignment="Center" FontSize="20"/>
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="0" Grid.Column="1" Margin="0 0 0 0" >
+                                <Label x:Name="lblUserEmail" Content="Email:" VerticalContentAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                <TextBlock x:Name="txtUserEmail" Text="lplatter@ilovejesus.com" Margin="10" VerticalAlignment="Center" FontSize="20"/>
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="1" Grid.Column="1" Margin="0 0 0 0" >
+                                <Label x:Name="lblPhoneNumber" Content="Phone Number:" VerticalContentAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                <TextBlock x:Name="txtPhoneNumber" Text="951-267-0612" Margin="10" VerticalAlignment="Center" FontSize="20"/>
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0 0 0 0" >
+                                <Label x:Name="lblRoles" Content="Roles:" VerticalContentAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                                <TextBlock x:Name="txtRoles" Text="Admin | Quiz Maker | Quiz Taker" Margin="10" VerticalAlignment="Center" FontSize="20"/>
+                            </DockPanel>
+                        </Grid>
+
+                        
+
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0" x:Name="btnDeleteAccount" Content="Delete My Account" Margin="70 10 70 30" FontSize="14" FontWeight="Bold"/>
+                            <Button Grid.Column="1" x:Name="btnEditInfo" Content="Edit My Info" Margin="70 10 70 30" FontSize="14" FontWeight="Bold" Click="btnEditInfo_Click"/>
+                            <Button Grid.Column="2" x:Name="btnUpdatePassword" Content="Update My Password" Margin="70 10 70 30" FontSize="14" FontWeight="Bold" Click="btnUpdatePassword_Click"/>
+
+                        </Grid>
+
+                    </Grid>
+                </TabItem> <!-- END Tab for User Profile -->
+                
+                <TabItem x:Name="tabChat" Header="Chat With Admin"> <!-- START Tab for Chats -->
+                    <TabControl x:Name="tabSetChats" Height="450" SelectionChanged="tabSetChats_SelectionChanged" TabStripPlacement="Left">
+                        <TabItem x:Name="tabStartChat" Header="Start New Chat"> <!-- START Inner Tab for Starting a Chat with an Admin -->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="80"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="275"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="10 80 0 0">
+                                    <DockPanel>
+                                        <Label x:Name="lblChatTopic" Content="Topic:" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                                        <ComboBox x:Name="cboChatTopic" VerticalContentAlignment="Center" Margin="10"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="0 30 0 0">
+                                        <Label x:Name="lblSendTo" Content="Send To:" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                                        <ComboBox x:Name="cboSendTo" VerticalContentAlignment="Top" Margin="10"/>
+                                    </DockPanel>
+                                </StackPanel>
+
+                                <Label Grid.Row="0" Grid.Column="1" x:Name="lblMessage" Content="Message:" VerticalContentAlignment="Top" Margin="10 10 0 0" FontSize="14" FontWeight="Bold"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtMessage" Margin="20 40 30 10" Padding="10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+
+                                <Button Grid.Row="1" Grid.Column="1" x:Name="btnSend" Content="Send Message" Margin="300 20 50 20" FontSize="14" FontWeight="Bold"/>
+
+                            </Grid>
+                        </TabItem> <!-- END Inner Tab for Starting a Chat with an Admin -->
+
+                        <TabItem x:Name="tabMyChats" Header="My Chats"> <!-- START Inner Tab for Viewing Sent & Received Chats -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+
+                                <DataGrid Grid.Column="0" x:Name="grdMyChats" Margin="20" CanUserReorderColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True" SelectionMode="Single">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Topic" Binding="{Binding ChatTypeID}" Width="*"/>
+                                        <DataGridTextColumn x:Name="grdColSender" Header="Sender" Binding="{Binding OriginatorName}" Width="*"/>
+                                        <DataGridTextColumn x:Name="grdColSentTo" Header="Sent To" Binding="{Binding RecipientName}" Width="*"/>
+                                        <DataGridTextColumn Header="Date Started" Binding="{Binding CreatedOn}"/>
+                                        <DataGridTextColumn Header="Last Message Date" Binding="{Binding LastMessageDate}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <!-- Show this if the User has not started any chats with an Admin yet. -->
+                                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtNoStartedChats" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                                    <Bold>No chats found.</Bold> 
+                                    <LineBreak/> <LineBreak/> 
+                                    You have not started any chats with an Admin yet.
+                                    <LineBreak/>
+                                    Go to the 'Start New Chat' tab to start one now!
+                                </TextBlock>
+
+                                <!-- Show this if the Admin has not received any chats from Users yet. -->
+                                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtNoReceivedChats" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                                    <Bold>No chats found.</Bold> 
+                                    <LineBreak/> <LineBreak/> 
+                                    You have not received chats from any Users yet.
+                                </TextBlock>
+
+                                <Button Grid.Column="1" x:Name="btnViewMessages" Content="View Messages" Margin="10 200" FontSize="14" FontWeight="Bold" Click="btnViewMessages_Click"/>
+                            </Grid>
+                        </TabItem> <!-- END Inner Tab for Viewing Sent & Received Chats -->
+                    </TabControl>
+                </TabItem> <!-- END Tab for Chats -->
+            </TabControl>
+
+        </StackPanel> <!-- END Tab Controls -->
+
+        <StatusBar Grid.Row="2"> <!-- START Status Bar -->
+            <StatusBarItem x:Name="statMessage" Content="Log in to get cozy in the QuizNest!" Padding="20 0 0 0" />
+        </StatusBar> <!-- END Status Bar -->
+    </Grid> <!-- END Outer Page Grid -->
+    
+</Window>
