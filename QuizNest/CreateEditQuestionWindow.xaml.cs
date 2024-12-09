@@ -25,10 +25,11 @@ namespace QuizNestPresentation
     public partial class CreateEditQuestionWindow : Window
     {
         UserVM _user;
-        QuizVM _quiz;
+        QuizVM? _quiz;
+        QuizVM? _editQuiz;
         IQuizManager _quizManager;
 
-        QuizTopic? _quizTopic; // If this is not null, then it is a new QuizTopic.
+        QuizTopic? _quizTopic; // If this is not null, then it is a new QuizTopic & user is creating a new Quiz.
 
         List<string> _questionTypes = new List<string>();
 
@@ -37,6 +38,7 @@ namespace QuizNestPresentation
 
         List<string> _multiChoiceAnswers = new List<string> { "", "", "", "" };
         
+        // For creating new Quiz Questions.
         public CreateEditQuestionWindow(UserVM user, QuizVM quiz, IQuizManager quizManager, QuizTopic quizTopic)
         {
             _user = user;
@@ -46,21 +48,51 @@ namespace QuizNestPresentation
 
             InitializeComponent();
         }
+        
+        // For editing existing Quiz Questions.
+        public CreateEditQuestionWindow(UserVM user, QuizVM quiz, IQuizManager quizManager)
+        {
+            _user = user;
+            _editQuiz = quiz;
+            _quizManager = quizManager;
+
+            InitializeComponent();
+        }
 
         private void winCreateEditQuestion_Loaded(object sender, RoutedEventArgs e)
         {
-            winCreateEditQuestion.Title = $"Create Quiz - {_quiz.Name} - Question {_count + 1}";
+            if(_editQuiz == null && _quiz != null)
+            {
+                winCreateEditQuestion.Title = $"Create Quiz - {_quiz.Name} - Question {_count + 1}";
+            }
+            else if(_editQuiz != null && _quiz == null)
+            {
+                winCreateEditQuestion.Title = $"Edit Quiz - {_editQuiz.Name} - Question {_count + 1}";
+
+                // Get all questions by the _editQuiz's quizID.
+
+                // Add all of these questions to the _questions list.
+
+                // Populate the first question.
+
+
+
+
+                // Other questions will populate accordingly when pressing next & back.
+                // Should be the same functionality as the current Next & Back buttons.
+
+                // User can have the option to add more questions, once they are past the end of the list.
+            }
 
             getAllQuestionTypes();
-            
-            // User must enter at least 1 question in order to have a valid quiz.
+
             btnBack.Visibility = Visibility.Hidden;
             btnBack.IsEnabled = false;
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to abandon this form?\nYour changes will not be saved.", "Abandon Quiz and Questions?",
+            var result = MessageBox.Show("Are you sure you want to abandon this form?\nYour changes will not be saved.", (_editQuiz == null ? "Abandon Quiz and Questions?" : "Abandon Edit?"),
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if(result == MessageBoxResult.Yes)
             {
@@ -518,7 +550,7 @@ namespace QuizNestPresentation
                 }
 
                 // If no exception thrown in the loop, questions were added!
-                MessageBox.Show("New Quiz Added Successfully!");
+                MessageBox.Show("New Quiz Questions Added Successfully!");
                 this.DialogResult = true;
                 this.Close();
             }

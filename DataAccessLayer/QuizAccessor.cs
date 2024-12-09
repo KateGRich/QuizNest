@@ -91,7 +91,7 @@ namespace DataAccessLayer
                         GivenName = reader.GetString(3),
                         FamilyName = reader.GetString(4),
                         CreatedBy = reader.GetInt32(5),
-                        Description = reader.IsDBNull(6) ? null : reader.GetString(6),
+                        Description = reader.GetString(6),
                         CreatedOn = reader.GetDateTime(7),
                         Active = reader.GetBoolean(8)
                     });
@@ -124,7 +124,7 @@ namespace DataAccessLayer
                     quizTopics.Add( new QuizTopic
                         {
                             QuizTopicID = reader.GetString(0),
-                            Description = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            Description = reader.GetString(1),
                     });
                 }
             }
@@ -253,6 +253,43 @@ namespace DataAccessLayer
             cmd.Parameters["@Answer3"].Value = answer3;
             cmd.Parameters["@Answer4"].Value = answer4;
             cmd.Parameters["@CorrectAnswer"].Value = correctAnswer;
+
+            try
+            {
+                conn.Open();
+                result = cmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return result;
+        }
+
+        public int UpdateQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive)
+        {
+            int result = 0;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_update_quiz", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
+            cmd.Parameters.Add("@newQuizTopicID", SqlDbType.NVarChar, 50);
+            cmd.Parameters.Add("@newName", SqlDbType.NVarChar, 50);
+            cmd.Parameters.Add("@newDescription", SqlDbType.NVarChar, 250);
+            cmd.Parameters.Add("@newActive", SqlDbType.Bit);
+
+            cmd.Parameters["@QuizID"].Value = quizID;
+            cmd.Parameters["@newQuizTopicID"].Value = newQuizTopicID;
+            cmd.Parameters["@newName"].Value = newName;
+            cmd.Parameters["@newDescription"].Value = newDescription;
+            cmd.Parameters["@newActive"].Value = newActive;
 
             try
             {

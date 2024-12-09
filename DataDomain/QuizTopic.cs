@@ -9,6 +9,6 @@ namespace DataDomain
     public class QuizTopic
     {
         public string QuizTopicID { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; }
     }
 }

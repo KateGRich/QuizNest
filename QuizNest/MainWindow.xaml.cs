@@ -182,7 +182,11 @@ namespace QuizNest
             if(grdMyQuizzes.SelectedItem != null)
             {
                 var editQuizWindow = new CreateEditQuizWindow(_user, (grdMyQuizzes.SelectedItem as QuizVM), _quizManager);
-                editQuizWindow.ShowDialog();
+                var result = editQuizWindow.ShowDialog();
+                if(result == true)
+                {
+                    showCreatedQuizzes();
+                }
             }
             else
             {

@@ -161,5 +161,27 @@ namespace LogicLayer
 
             return added;
         }
+
+        public bool EditQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive)
+        {
+            bool updated = false;
+
+            int rowsAffected = 0;
+
+            try
+            {
+                rowsAffected = _quizAccessor.UpdateQuizInformation(quizID, newQuizTopicID, newName, newDescription, newActive);
+                if(rowsAffected == 1)
+                {
+                    updated = true;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Update Failed...", ex);
+            }
+
+            return updated;
+        }
     }
 }
