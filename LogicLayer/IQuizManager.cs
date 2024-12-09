@@ -11,5 +11,11 @@ namespace LogicLayer
     {
         List<QuizVM> GetQuizzesByCreator(int userID);
         List<QuizVM> GetAllActiveQuizes();
+        List<QuizTopic> GetAllQuizTopics();
+        List<string> GetAllQuestionTypes();
+        bool AddNewQuizTopic(string quizTopic, string description);
+        int AddNewQuiz(string quizTopicID, string name, int userID, string description); // Returns new QuizID.
+        bool AddNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
+                string answer2, string answer3, string answer4, string correctAnswer);
     }
 }

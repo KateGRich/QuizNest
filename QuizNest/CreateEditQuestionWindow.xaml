@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuizNestPresentation"
         mc:Ignorable="d"
-        Title="Create Quiz | Question 1" x:Name="winCreateEditQuestion" Height="600" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Create Quiz | Question 1" x:Name="winCreateEditQuestion" Height="600" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="winCreateEditQuestion_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="100"/>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
@@ -23,27 +23,26 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.ColumnSpan="2" Grid.Row="0" x:Name="lblPrompt" Content="Prompt:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="0" x:Name="txtPrompt" Margin="70 10 30 10"  VerticalContentAlignment="Center" Padding="10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <Label Grid.ColumnSpan="2" Grid.Row="0" x:Name="lblPrompt" Content="Prompt:" VerticalContentAlignment="Top" Margin="10 10 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="0" x:Name="txtPrompt" Margin="30 40 30 0" Padding="10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="1" x:Name="lblQuestionType" Content="Question Type:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <ComboBox Grid.ColumnSpan="2" Grid.Row="1" x:Name="cboQuestionType" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <ComboBox Grid.ColumnSpan="2" Grid.Row="1" x:Name="cboQuestionType" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" SelectionChanged="cboQuestionType_SelectionChanged"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="2" x:Name="lblAnswer1" Content="Answer 1:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="2" x:Name="txtAnswer1" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="2" x:Name="txtAnswer1" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" TextChanged="txtAnswer1_TextChanged"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="3" x:Name="lblAnswer2" Content="Answer 2:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="3" x:Name="txtAnswer2" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="3" x:Name="txtAnswer2" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" TextChanged="txtAnswer2_TextChanged"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="4" x:Name="lblAnswer3" Content="Answer 3:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="4" x:Name="txtAnswer3" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="4" x:Name="txtAnswer3" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" TextChanged="txtAnswer3_TextChanged"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="5" x:Name="lblAnswer4" Content="Answer 4:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="5" x:Name="txtAnswer4" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="5" x:Name="txtAnswer4" Margin="80 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" TextChanged="txtAnswer4_TextChanged"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="6" x:Name="lblCorrectAnswer" Content="Correct Answer:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <ComboBox Grid.ColumnSpan="2" Grid.Row="6" x:Name="cboCorrectAnswer" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="6" x:Name="txtCorrectAnswer" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <ComboBox Grid.ColumnSpan="2" Grid.Row="6" x:Name="cboCorrectAnswer" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" IsEditable="True"/>
 
         <Grid Grid.ColumnSpan="2" Grid.Row="7">
             <Grid.ColumnDefinitions>
@@ -52,12 +51,12 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
-            <Button Grid.Column="0" x:Name="btnCancel" Content="Cancel" Margin="20 30 20 10" FontSize="14" FontWeight="Bold"/>
-            <Button Grid.Column="1"  x:Name="btnBack" Content="Back" Margin="20 0 20 40" FontSize="14" FontWeight="Bold"/>
-            <Button Grid.Column="2" x:Name="btnNext" Content="Next" Margin="20 0 20 40" FontSize="14" FontWeight="Bold"/>
-            <Button Grid.Column="3" x:Name="btnComplete" Content="Complete" Margin="20 30 20 10" FontSize="14" FontWeight="Bold"/>
+
+            <Button Grid.Column="0" x:Name="btnCancel" Content="Cancel" Margin="20 30 20 10" FontSize="14" FontWeight="Bold" Click="btnCancel_Click"/>
+            <Button Grid.Column="1"  x:Name="btnBack" Content="Back" Margin="20 0 20 40" FontSize="14" FontWeight="Bold" Click="btnBack_Click"/>
+            <Button Grid.Column="2" x:Name="btnNext" Content="Next" Margin="20 0 20 40" FontSize="14" FontWeight="Bold" Click="btnNext_Click"/>
+            <Button Grid.Column="3" x:Name="btnComplete" Content="Complete" Margin="20 30 20 10" FontSize="14" FontWeight="Bold" Click="btnComplete_Click"/>
         </Grid>
-        
+
     </Grid>
 </Window>

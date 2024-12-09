@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuizNestPresentation"
         mc:Ignorable="d"
-        Title="Create a New Quiz" x:Name="winCreateEditQuiz"  Height="500" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Create a New Quiz" x:Name="winCreateEditQuiz"  Height="500" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="winCreateEditQuiz_Loaded">
     <Grid> <!-- START Page Grid - Window is for Creating or Editing Quiz Data -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="70"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="90"/>
             <RowDefinition/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
@@ -21,20 +22,23 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.ColumnSpan="2" Grid.Row="0" x:Name="lblQuizName" Content="Quiz Name:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="0" x:Name="txtQuizName" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="0" x:Name="txtQuizName" Margin="110 15 30 15" VerticalContentAlignment="Center" Padding="10 0 0 0"/>
 
         <Label Grid.ColumnSpan="2" Grid.Row="1" x:Name="lblQuizTopic" Content="Quiz Topic:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <ComboBox Grid.ColumnSpan="2" Grid.Row="1" x:Name="cboQuizTopic" Margin="110 20 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" IsEditable="True"/>
+        <ComboBox Grid.ColumnSpan="2" Grid.Row="1" x:Name="cboQuizTopic" Margin="110 15 30 15" VerticalContentAlignment="Center" Padding="10 0 0 0" IsEditable="True" TextBoxBase.TextChanged="cboQuizTopic_TextChanged"/>
 
-        <Label Grid.Column="0" Grid.Row="2" x:Name="lblQuizDescription" Content="Description:" VerticalContentAlignment="Top" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="2" x:Name="txtQuizDescription" Margin="30 30 30 20" VerticalContentAlignment="Center" Padding="10 0 0 0" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <Label Grid.Column="0" Grid.Row="2" x:Name="lblTopicDescription" Content="Topic Description:" VerticalContentAlignment="Top" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="2" x:Name="txtTopicDescription" Margin="30 30 30 10" Padding="10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
 
-        <DockPanel Grid.ColumnSpan="2" Grid.Row="3">
+        <Label Grid.Column="0" Grid.Row="3" x:Name="lblQuizDescription" Content="Quiz Description:" VerticalContentAlignment="Top" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
+        <TextBox Grid.ColumnSpan="2" Grid.Row="3" x:Name="txtQuizDescription" Margin="30 30 30 20" Padding="10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+
+        <DockPanel Grid.ColumnSpan="2" Grid.Row="4" x:Name="dkpActive">
             <Label x:Name="lblActive" Content="Active Status:" VerticalContentAlignment="Center" Margin="10 0 0 0" FontSize="12" FontWeight="Bold"/>
             <CheckBox x:Name="chkActive" VerticalAlignment="Center" Margin="10"/>
         </DockPanel>
 
-        <Button Grid.Row="4" Grid.Column="0" x:Name="btnCancel" Content="Cancel" Margin="30 20" FontSize="14" FontWeight="Bold" Click="btnCancel_Click"/>
-        <Button Grid.Row="4" Grid.Column="1" x:Name="btnCreateQuestions" Content="Create Questions" Margin="30 20" FontSize="14" FontWeight="Bold" Click="btnCreateQuestions_Click"/>
+        <Button Grid.Row="5" Grid.Column="0" x:Name="btnCancel" Content="Cancel" Margin="30 20" FontSize="14" FontWeight="Bold" Click="btnCancel_Click"/>
+        <Button Grid.Row="45" Grid.Column="1" x:Name="btnCreateQuestions" Content="Create Questions" Margin="30 20" FontSize="14" FontWeight="Bold" Click="btnCreateQuestions_Click"/>
     </Grid> <!-- END Page Grid -->
 </Window>

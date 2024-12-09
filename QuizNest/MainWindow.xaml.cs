@@ -170,14 +170,18 @@ namespace QuizNest
         // Quiz Tab Methods
         private void btnCreateNewQuiz_Click(object sender, RoutedEventArgs e)
         {
-            var createQuizWindow = new CreateEditQuizWindow();
-            createQuizWindow.ShowDialog();
+            var createQuizWindow = new CreateEditQuizWindow(_user, _quizManager);
+            var result = createQuizWindow.ShowDialog();
+            if(result == true)
+            {
+                showCreatedQuizzes();
+            }
         }
         private void btnEditQuiz_Click(object sender, RoutedEventArgs e)
         {
             if(grdMyQuizzes.SelectedItem != null)
             {
-                var editQuizWindow = new CreateEditQuizWindow();
+                var editQuizWindow = new CreateEditQuizWindow(_user, (grdMyQuizzes.SelectedItem as QuizVM), _quizManager);
                 editQuizWindow.ShowDialog();
             }
             else
