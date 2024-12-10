@@ -29,6 +29,7 @@ namespace QuizNestPresentation
         List<string> _topics = new List<string>();
 
         IQuizManager _quizManager;
+        IQuestionManager? _questionManager;
 
         // For creating a new Quiz.
         public CreateEditQuizWindow(UserVM user, IQuizManager quizManager)
@@ -40,11 +41,12 @@ namespace QuizNestPresentation
         }
 
         // For editing an existing Quiz.
-        public CreateEditQuizWindow(UserVM user, QuizVM quiz, IQuizManager quizManager)
+        public CreateEditQuizWindow(UserVM user, QuizVM quiz, IQuizManager quizManager, IQuestionManager questionManager)
         {
             this._user = user;
             this._quiz = quiz;
             this._quizManager = quizManager;
+            this._questionManager = questionManager;
 
             InitializeComponent();
         }
@@ -198,8 +200,15 @@ namespace QuizNestPresentation
                     }
 
                     // Pass the updated quiz into the editQuestionWindow.
-                    var editQuestionsWindow = new CreateEditQuestionWindow(_user, _quiz, _quizManager);
-                    editQuestionsWindow.ShowDialog();
+                    var editQuestionsWindow = new CreateEditQuestionWindow(_user, _quiz, _quizManager, _questionManager);
+                    var questionResult = editQuestionsWindow.ShowDialog();
+                    if(questionResult == true)
+                    {
+                        // Question Update was successful.
+                        // Close this window, also.
+                        this.DialogResult = true;
+                        this.Close();
+                    }
                 }
             }
         }

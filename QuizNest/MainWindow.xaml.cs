@@ -30,6 +30,9 @@ namespace QuizNest
         IQuizManager _quizManager = new QuizManager();
         List<QuizVM> _quizzes;
 
+        IQuestionManager _questionManager = new QuestionManager();
+
+
         IQuizRecordManager _quizRecordManager = new QuizRecordManager();
         List<QuizRecordVM> _takenQuizzes;
 
@@ -181,7 +184,7 @@ namespace QuizNest
         {
             if(grdMyQuizzes.SelectedItem != null)
             {
-                var editQuizWindow = new CreateEditQuizWindow(_user, (grdMyQuizzes.SelectedItem as QuizVM), _quizManager);
+                var editQuizWindow = new CreateEditQuizWindow(_user, (grdMyQuizzes.SelectedItem as QuizVM), _quizManager, _questionManager);
                 var result = editQuizWindow.ShowDialog();
                 if(result == true)
                 {
