@@ -41,11 +41,12 @@ namespace QuizNestPresentation
         List<string> _multiChoiceAnswers = new List<string> { "", "", "", "" };
         
         // For creating new Quiz Questions.
-        public CreateEditQuestionWindow(UserVM user, QuizVM quiz, IQuizManager quizManager, QuizTopic quizTopic)
+        public CreateEditQuestionWindow(UserVM user, QuizVM quiz, IQuizManager quizManager, IQuestionManager questionManager, QuizTopic quizTopic)
         {
             _user = user;
             _quiz = quiz;
             _quizManager = quizManager;
+            _questionManager = questionManager;
             _quizTopic = quizTopic;
 
             InitializeComponent();
@@ -1021,25 +1022,46 @@ namespace QuizNestPresentation
 
             return newQuizID;
         }
+
         private void addNewQuizQuestions(int newQuizID)
         {
             try
             {
-                for(int i = 0; i < _newQuestions.Count; i++)
+                if(_editQuiz == null)
                 {
-                    bool questionResult = _quizManager.AddNewQuizQuestion(_newQuestions[i].QuestionTypeID, newQuizID,
-                                                _newQuestions[i].Prompt, _newQuestions[i].Answer1, _newQuestions[i].Answer2,
-                                                _newQuestions[i].Answer3, _newQuestions[i].Answer4, _newQuestions[i].CorrectAnswer);
-                    if(questionResult == false)
+                    // Creating new Quiz.
+                    for(int i = 0; i < _questions.Count; i++)
                     {
-                        throw new Exception("Quiz Question Not Added...");
+                        bool questionResult = _questionManager.AddNewQuizQuestion(_questions[i].QuestionTypeID, newQuizID,
+                                                    _questions[i].Prompt, _questions[i].Answer1, _questions[i].Answer2,
+                                                    _questions[i].Answer3, _questions[i].Answer4, _questions[i].CorrectAnswer);
+                        if(questionResult == false)
+                        {
+                            throw new Exception("Quiz Question Not Added...");
+                        }
                     }
-                }
 
-                // If no exception thrown in the loop, questions were added!
-                MessageBox.Show("New Quiz Questions Added Successfully!");
-                //this.DialogResult = true;
-                //this.Close();
+                    // If no exception thrown in the loop, questions were added!
+                    MessageBox.Show("New Quiz Questions Added Successfully!");
+                    this.DialogResult = true;
+                    this.Close();
+                }
+                else
+                {
+                    // Editing existing Quiz - just adding new questions to it.
+                    for(int i = 0; i < _newQuestions.Count; i++)
+                    {
+                        bool questionResult = _questionManager.AddNewQuizQuestion(_newQuestions[i].QuestionTypeID, newQuizID,
+                                                    _newQuestions[i].Prompt, _newQuestions[i].Answer1, _newQuestions[i].Answer2,
+                                                    _newQuestions[i].Answer3, _newQuestions[i].Answer4, _newQuestions[i].CorrectAnswer);
+                        if(questionResult == false)
+                        {
+                            throw new Exception("Quiz Question Not Added...");
+                        }
+                    }
+
+                    MessageBox.Show("New Quiz Questions Added Successfully!");
+                }
             }
             catch(Exception ex)
             {
@@ -1047,6 +1069,7 @@ namespace QuizNestPresentation
                 MessageBox.Show(message);
             }
         }
+
         private void saveQuizQuestions(List<Question> questions, int quizID)
         {
             try

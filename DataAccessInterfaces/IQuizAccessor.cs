@@ -16,8 +16,6 @@ namespace DataAccessInterfaces
         List<string> SelectAllQuestionTypes();
         int InsertNewQuizTopic(string quizTopic, string description);
         int InsertNewQuiz(string quizTopicID, string name, int userID, string description); // Returns new QuizID.
-        int InsertNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
-                string answer2, string answer3, string answer4, string correctAnswer);
         int UpdateQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive);
     }
 }

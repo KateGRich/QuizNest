@@ -41,6 +41,30 @@ namespace LogicLayer
             return questions;
         }
 
+        public bool AddNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
+                    string answer2, string answer3, string answer4, string correctAnswer)
+        {
+            bool added = false;
+
+            int rowsAffected = 0;
+
+            try
+            {
+                rowsAffected = _questionAccessor.InsertNewQuizQuestion(questionTypeID, quizID, prompt,
+                                    answer1, answer2, answer3, answer4, correctAnswer);
+                if(rowsAffected == 1)
+                {
+                    added = true;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("New Quiz Question Creation Failed...", ex);
+            }
+
+            return added;
+        }
+
         public bool EditQuestionInformation(int questionID, string newQuestionTypeID, int quizID, string newPrompt,
                         string newAnswer1, string newAnswer2, string newAnswer3, string newAnswer4,
                         string newCorrectAnswer, bool newActive)

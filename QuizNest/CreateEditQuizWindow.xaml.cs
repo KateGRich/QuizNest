@@ -29,13 +29,14 @@ namespace QuizNestPresentation
         List<string> _topics = new List<string>();
 
         IQuizManager _quizManager;
-        IQuestionManager? _questionManager;
+        IQuestionManager _questionManager;
 
         // For creating a new Quiz.
-        public CreateEditQuizWindow(UserVM user, IQuizManager quizManager)
+        public CreateEditQuizWindow(UserVM user, IQuizManager quizManager, IQuestionManager questionManager)
         {
             this._user = user;
             this._quizManager = quizManager;
+            this._questionManager = questionManager;
 
             InitializeComponent();
         }
@@ -131,7 +132,7 @@ namespace QuizNestPresentation
                     Description = txtQuizDescription.Text
                 };
 
-                var createQuestionWindow = new CreateEditQuestionWindow(_user, _quiz, _quizManager, quizTopic);
+                var createQuestionWindow = new CreateEditQuestionWindow(_user, _quiz, _quizManager, _questionManager, quizTopic);
                 var result = createQuestionWindow.ShowDialog();
                 if(result == false)
                 {

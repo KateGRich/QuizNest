@@ -227,50 +227,6 @@ namespace DataAccessLayer
             return newQuizID;
         }
 
-        public int InsertNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
-                string answer2, string answer3, string answer4, string correctAnswer)
-        {
-            int result = 0;
-
-            var conn = DBConnection.GetConnection();
-            var cmd = new SqlCommand("sp_insert_new_question", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters.Add("@QuestionTypeID", SqlDbType.NVarChar, 50);
-            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
-            cmd.Parameters.Add("@Prompt", SqlDbType.NVarChar, 250);
-            cmd.Parameters.Add("@Answer1", SqlDbType.NVarChar, 250);
-            cmd.Parameters.Add("@Answer2", SqlDbType.NVarChar, 250);
-            cmd.Parameters.Add("@Answer3", SqlDbType.NVarChar, 250);
-            cmd.Parameters.Add("@Answer4", SqlDbType.NVarChar, 250);
-            cmd.Parameters.Add("@CorrectAnswer", SqlDbType.NVarChar, 250);
-
-            cmd.Parameters["@QuestionTypeID"].Value = questionTypeID;
-            cmd.Parameters["@QuizID"].Value = quizID;
-            cmd.Parameters["@Prompt"].Value = prompt;
-            cmd.Parameters["@Answer1"].Value = answer1;
-            cmd.Parameters["@Answer2"].Value = answer2;
-            cmd.Parameters["@Answer3"].Value = answer3;
-            cmd.Parameters["@Answer4"].Value = answer4;
-            cmd.Parameters["@CorrectAnswer"].Value = correctAnswer;
-
-            try
-            {
-                conn.Open();
-                result = cmd.ExecuteNonQuery();
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
-            }
-
-            return result;
-        }
-
         public int UpdateQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive)
         {
             int result = 0;
