@@ -100,11 +100,13 @@ namespace QuizNestPresentation
 
                 if(_editUser.Roles.Contains(chkAdmin.Content.ToString()))
                 {
+                    // Admins cannot take away Admin Role from other Admins.
                     chkAdmin.IsChecked = true;
+                    chkAdmin.IsEnabled = false;
+
                     if(_editUser.UserID == _adminUser.UserID)
                     {
                         // Admin is updating themselves through this form.
-                        chkAdmin.IsEnabled = false;
                         chkActive.IsEnabled = false;
                         dtpkReactivationDate.IsEnabled = false;
                     }
