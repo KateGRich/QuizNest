@@ -197,8 +197,6 @@ namespace QuizNest
             }
         }
 
-
-
         private void btnLeaderboard_Click(object sender, RoutedEventArgs e)
         {
             if(grdAllQuizzes.SelectedItem != null)
@@ -215,9 +213,83 @@ namespace QuizNest
         }
         private void btnTakeQuiz_Click(object sender, RoutedEventArgs e)
         {
-            var takeQuizWindow = new TakeQuizWindow();
-            takeQuizWindow.ShowDialog();
+            string attemptType = "First";
+
+            if(grdAllQuizzes.SelectedItem != null)
+            {
+                var quiz = grdAllQuizzes.SelectedItem as QuizVM;
+
+                // Get the quizzes they've taken before.
+                List<QuizRecordVM> existingRecords = (grdTakenQuizzes.ItemsSource as List<QuizRecordVM>);
+
+                if(existingRecords == null)
+                {
+                    // No taken quizzes, yet.
+
+                    // Just take a new quiz.
+                    var takeQuizWindow = new TakeReviewQuizWindow(_user, quiz, _questionManager, _quizRecordManager, attemptType);
+                    var result = takeQuizWindow.ShowDialog();
+                    if(result == false)
+                    {
+                        _takenQuizzes = _quizRecordManager.GetTakenQuizzes(_user.UserID);
+                        grdTakenQuizzes.ItemsSource = _takenQuizzes;
+                    }
+                }
+                else
+                {
+                    foreach(QuizRecordVM r in existingRecords)
+                    {
+                        if(r.QuizID == quiz.QuizID)
+                        {
+                            // They've taken this quiz before.
+
+                            attemptType = "Retake";
+                            break;
+                        }
+                    }
+
+                    if(attemptType == "Retake")
+                    {
+                        // Have them retake it.
+
+                        var retakeQuizWindow = new TakeReviewQuizWindow(_user, quiz, _questionManager, _quizRecordManager, attemptType);
+                        var result = retakeQuizWindow.ShowDialog();
+                        if(result == false)
+                        {
+                            _takenQuizzes = _quizRecordManager.GetTakenQuizzes(_user.UserID);
+                            grdTakenQuizzes.ItemsSource = _takenQuizzes;
+                        }
+                    }
+
+                    else if(attemptType == "First")
+                    {
+                        // They haven't taken this one before.
+                        // Have them just take it.
+
+                        var takeQuizWindow = new TakeReviewQuizWindow(_user, quiz, _questionManager, _quizRecordManager, attemptType);
+                        var result = takeQuizWindow.ShowDialog();
+                        if(result == false)
+                        {
+                            _takenQuizzes = _quizRecordManager.GetTakenQuizzes(_user.UserID);
+                            grdTakenQuizzes.ItemsSource = _takenQuizzes;
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("You must select a quiz in order to take one.", "No Selection");
+            }
         }
+
+
+
+
+
+
+
+
 
 
 

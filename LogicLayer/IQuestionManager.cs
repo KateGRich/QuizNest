@@ -18,5 +18,6 @@ namespace LogicLayer
         bool EditQuestionInformation(int questionID, string newQuestionTypeID, int quizID, string newPrompt,
                         string newAnswer1, string newAnswer2, string newAnswer3, string newAnswer4,
                         string newCorrectAnswer, bool newActive);
+        List<Question> GetActiveQuestionsByQuizID(int quizID);
     }
 }

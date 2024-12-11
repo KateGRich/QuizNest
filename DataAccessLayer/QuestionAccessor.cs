@@ -147,5 +147,48 @@ namespace DataAccessLayer
 
             return result;
         }
+
+        public List<Question> SelectActiveQuestionsByQuizID(int quizID)
+        {
+            List<Question> questions = new List<Question>();
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_all_questions_by_quizID", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
+            cmd.Parameters["@QuizID"].Value = quizID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    questions.Add(new Question()
+                    {
+                        QuestionID = reader.GetInt32(0),
+                        QuestionTypeID = reader.GetString(1),
+                        QuizID = reader.GetInt32(2),
+                        Prompt = reader.GetString(3),
+                        Answer1 = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        Answer2 = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        Answer3 = reader.IsDBNull(6) ? null : reader.GetString(6),
+                        Answer4 = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        CorrectAnswer = reader.GetString(8),
+                        CreatedOn = reader.GetDateTime(9),
+                        Active = reader.GetBoolean(10)
+                    });
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return questions;
+        }
     }
 }

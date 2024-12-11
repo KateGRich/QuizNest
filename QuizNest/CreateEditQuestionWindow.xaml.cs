@@ -85,7 +85,15 @@ namespace QuizNestPresentation
 
                 // Get all questions by the _editQuiz's quizID.
                 // Add all of these questions to the _questions list.
-                _questions = _questionManager.GetAllQuestionsByQuizID(_editQuiz.QuizID);
+                try
+                {
+                    _questions = _questionManager.GetAllQuestionsByQuizID(_editQuiz.QuizID);
+                }
+                catch(Exception ex)
+                {
+                    string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
+                    MessageBox.Show(message);
+                }
 
                 // Populate the first question.
                 loadPreviousNextCreatedQuestion();

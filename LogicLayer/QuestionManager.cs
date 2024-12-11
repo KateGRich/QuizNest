@@ -89,5 +89,21 @@ namespace LogicLayer
 
             return updated;
         }
+
+        public List<Question> GetActiveQuestionsByQuizID(int quizID)
+        {
+            List<Question> questions = null;
+
+            try
+            {
+                questions = _questionAccessor.SelectActiveQuestionsByQuizID(quizID);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No questions found...", ex);
+            }
+
+            return questions;
+        }
     }
 }

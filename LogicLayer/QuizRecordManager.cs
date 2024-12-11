@@ -60,5 +60,48 @@ namespace LogicLayer
 
             return takenQuizzes;
         }
+
+        public int AddQuizRecord(string attemptType, int userID, int quizID, decimal score)
+        {
+            int newRecordID = 0;
+
+            try
+            {
+                newRecordID = _quizRecordAccessor.InsertQuizRecord(attemptType, userID, quizID, score);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("New Quiz Creation Failed...", ex);
+            }
+
+            return newRecordID;
+        }
+
+        public bool AddMissedQuestion(int quizRecordID, int questionID)
+        {
+            bool added = false;
+
+            int rowsAffected = 0;
+
+            try
+            {
+                rowsAffected = _quizRecordAccessor.InsertMissedQuestion(quizRecordID, questionID);
+                if(rowsAffected == 1)
+                {
+                    added = true;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Missed Question Not Added...", ex);
+            }
+
+            return added;
+        }
+
+        public bool EditQuizRecordIsPublicStatus(int quizRecordID, bool isPublic)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

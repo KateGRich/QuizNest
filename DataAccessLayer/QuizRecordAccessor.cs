@@ -90,5 +90,76 @@ namespace DataAccessLayer
             }
             return takenQuizzes;
         }
+
+        public int InsertQuizRecord(string attemptType, int userID, int quizID, decimal score)
+        {
+            int newRecordID = 0;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_insert_new_quizRecord", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@AttemptTypeID", SqlDbType.NVarChar, 50);
+            cmd.Parameters.Add("@UserID", SqlDbType.Int);
+            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
+            cmd.Parameters.Add("@Score", SqlDbType.Decimal);
+
+            cmd.Parameters["@AttemptTypeID"].Value = attemptType;
+            cmd.Parameters["@UserID"].Value = userID;
+            cmd.Parameters["@QuizID"].Value = quizID;
+            cmd.Parameters["@Score"].Value = score;
+            try
+            {
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                newRecordID = Convert.ToInt32(result);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return newRecordID;
+        }
+
+        public int InsertMissedQuestion(int quizRecordID, int questionID)
+        {
+            int result = 0;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_insert_missed_question", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizRecordID", SqlDbType.Int);
+            cmd.Parameters.Add("@QuestionID", SqlDbType.Int);
+
+            cmd.Parameters["@QuizRecordID"].Value = quizRecordID;
+            cmd.Parameters["@QuestionID"].Value = questionID;
+
+            try
+            {
+                conn.Open();
+                result = cmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return result;
+        }
+
+        public int UpdateQuizRecordIsPublicStatus(int quizRecordID, bool isPublic)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

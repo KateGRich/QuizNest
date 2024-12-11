@@ -160,10 +160,10 @@
 
                                 <DataGrid Grid.Column="0" x:Name="grdTakenQuizzes" Margin="20" CanUserReorderColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True" SelectionMode="Single">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Quiz Name" Binding="{Binding QuizName}" Width="*"/>
+                                        <DataGridTextColumn Header="Quiz Name" Binding="{Binding QuizName}" Width="175"/>
                                         <DataGridTextColumn Header="Topic" Binding="{Binding QuizTopicID}" Width="*"/>
-                                        <DataGridTextColumn Header="Score" Binding="{Binding FormattedScore}"/>
-                                        <DataGridTextColumn Header="Attempt Type" Binding="{Binding AttemptTypeID}" Width="*"/>
+                                        <DataGridTextColumn Header="Score" Binding="{Binding FormattedScore}" Width="*"/>
+                                        <DataGridTextColumn Header="Attempt Type" Binding="{Binding AttemptTypeID}"/>
                                         <DataGridTextColumn Header="Date Taken" Binding="{Binding FormattedDate}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
