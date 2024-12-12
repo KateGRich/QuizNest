@@ -26,6 +26,8 @@ namespace QuizNestPresentation
 
         string? _attemptType;
 
+        bool _isReviewingMissedOnly = false;
+
         IQuestionManager _questionManager;
         IQuizRecordManager _quizRecordManager;
 
@@ -49,24 +51,33 @@ namespace QuizNestPresentation
         }
 
         // For reviewing quizzes.
-        public TakeReviewQuizWindow(UserVM user, QuizVM quiz, IQuestionManager questionManager, IQuizRecordManager quizRecordManager)
+        public TakeReviewQuizWindow(UserVM user, QuizVM quiz, IQuestionManager questionManager, IQuizRecordManager quizRecordManager, bool isReviewingMissedOnly)
         {
             this._user = user;
             this._quiz = quiz;
             this._questionManager = questionManager;
             this._quizRecordManager = quizRecordManager;
 
+            this._isReviewingMissedOnly = isReviewingMissedOnly;
+
             InitializeComponent();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to abandon this quiz?\nYour score will not be saved.", "Abandon Quiz?",
-                            MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if(result == MessageBoxResult.Yes)
+            if(_attemptType == null)
             {
-                this.DialogResult = false;
                 this.Close();
+            }
+            else
+            {
+                var result = MessageBox.Show("Are you sure you want to abandon this quiz?\nYour score will not be saved.", "Abandon Quiz?",
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if(result == MessageBoxResult.Yes)
+                {
+                    this.DialogResult = false;
+                    this.Close();
+                }
             }
         }
 
@@ -84,7 +95,15 @@ namespace QuizNestPresentation
             // Add all of these questions to the _questions list.
             try
             {
-                _questions = _questionManager.GetActiveQuestionsByQuizID(_quiz.QuizID);
+                if(_isReviewingMissedOnly == false)
+                {
+                    _questions = _questionManager.GetActiveQuestionsByQuizID(_quiz.QuizID);
+                }
+                if(_isReviewingMissedOnly == true)
+                {
+                    // GET MISSED QUESTIONS INSTEAD
+                    //_questions = _quizRecordManager.GetMissedQuestions();
+                }
             }
             catch(Exception ex)
             {
@@ -94,6 +113,28 @@ namespace QuizNestPresentation
 
             // Populate the first question.
             loadPreviousNextCreatedQuestion();
+
+            if(_attemptType == null)
+            {
+                // Reviewing a quiz.
+
+                btnCancel.Visibility = Visibility.Hidden;
+                btnCancel.IsEnabled = false;
+
+                btnSubmit.Content = "Done";
+                btnSubmit.Visibility= Visibility.Visible;
+                btnSubmit.IsEnabled = true;
+
+                rdoAnswer1.IsEnabled = false;
+                rdoAnswer2.IsEnabled = false;
+                rdoAnswer3.IsEnabled = false;
+                rdoAnswer4.IsEnabled = false;
+
+                lblYourAnswer.Content = "Correct Answer:";
+                txtYourAnswer.IsEnabled = false;
+
+                loadAnswer();
+            }
         }
 
         
@@ -102,7 +143,24 @@ namespace QuizNestPresentation
         {
             string answer = "";
 
-            if(_count == 0 && _answers.Count == 0) // at the beginning of adding answers, we have no answers yet, nowhere to go 
+            if(_attemptType == null)
+            {
+                ++_count;
+
+                if(_count > 0)
+                {
+                    btnBack.Visibility = Visibility.Visible;
+                    btnBack.IsEnabled = true;
+                }
+
+                setPageTitle();
+
+                clearAnswer();
+                loadPreviousNextCreatedQuestion();
+                loadAnswer();
+            }
+
+            else if(_count == 0 && _answers.Count == 0) // at the beginning of adding answers, we have no answers yet, nowhere to go 
             {
                 // Verify they answered the question.
                 if(validateAnswer(ref answer) == false)
@@ -305,7 +363,34 @@ namespace QuizNestPresentation
         {
             string answer = "";
 
-            if(_count + 1 == _questions.Count) // this is the last question to answer, no more after this - but able to go back
+            if(_attemptType == null)
+            {
+                --_count;
+
+                if(_count == 0)
+                {
+                    btnBack.Visibility = Visibility.Hidden;
+                    btnBack.IsEnabled = false;
+                }
+                if(_count > 0)
+                {
+                    btnBack.Visibility = Visibility.Visible;
+                    btnBack.IsEnabled = true;
+                }
+                if(_count < _questions.Count)
+                {
+                    btnNext.Visibility = Visibility.Visible;
+                    btnNext.IsEnabled = true;
+                }
+
+                setPageTitle();
+
+                clearAnswer();
+                loadPreviousNextCreatedQuestion();
+                loadAnswer();
+            }
+
+            else if(_count + 1 == _questions.Count) // this is the last question to answer, no more after this - but able to go back
             {
                 // Can only move backwards.
                 if(_count + 1 == _answers.Count)
@@ -426,7 +511,7 @@ namespace QuizNestPresentation
                 // Decrement _count & reset title.
                 --_count;
 
-                winTakeReviewQuizWindow.Title = $"Take Quiz - {_quiz.Name} - Question {_count + 1}";
+                setPageTitle();
 
                 // If _count == 0, disable btnBack.
                 if(_count == 0)
@@ -445,73 +530,83 @@ namespace QuizNestPresentation
 
         private void btnSubmit_Click(object sender, RoutedEventArgs e)
         {
-            string answer = "";
-
-            // See if the current (last) question is answered.
-            // If not, they must answer it - take them back to it.
-            // Validate their answer.
-            if(validateAnswer(ref answer) == false)
+            if(_attemptType == null)
             {
-                return;
+                this.Close();
             }
-
-            // If it is answered, save their current answer to the _answers list.
-            // Add new answer to the list.
-            if(_answers.Count < _questions.Count)
+            else
             {
-                _answers.Add(answer);
-            }
+                string answer = "";
 
-            // If it is already in the _answers list - _answers.Count == _questions.Count.
-            // Overwrite the answer!
-            else if(_answers.Count == _questions.Count)
-            {
-                _answers[_count] = answer;
-            }
-
-
-            // Submit the test.
-            // Check they actually answered all questions.
-            if(_answers.Count == _questions.Count)
-            {
-                // Calculate their score - how many they got right, & how many they missed.
-
-                // How many question did they miss?
-                for(int i = 0; i < _questions.Count; i++)
+                // See if the current (last) question is answered.
+                // If not, they must answer it - take them back to it.
+                // Validate their answer.
+                if(validateAnswer(ref answer) == false)
                 {
-                    // Count through, if their answer does NOT equal the correct answer,
-                    // add it to _missedQuestions.
-                    if(_questions[i].CorrectAnswer != _answers[i])
-                    {
-                        _missedQuestions.Add(_questions[i]);
-                    }
+                    return;
                 }
 
-                // Divide number of correct questions by the quiz question count.
-                decimal score = (_questions.Count - _missedQuestions.Count) / _questions.Count;
-
-                // Insert their QuizRecord.
-                // Get the ID, in case they missed any questions.
-                int newRecordID = addQuizRecord(score);
-
-                // If _missedQuestions.Count > 0, then insert all missed questions into the DB.
-                if(_missedQuestions.Count > 0)
+                // If it is answered, save their current answer to the _answers list.
+                // Add new answer to the list.
+                if(_answers.Count < _questions.Count)
                 {
-                    foreach(Question q in _missedQuestions)
-                    {
-                        // Add to DB.
-                        addMissedQuestion(newRecordID, q);
-                    }
+                    _answers.Add(answer);
                 }
 
-                // Go to QuizCompletionOverviewWindow & display their score.
-                // They have the option to Retake the Quiz & Review the correct answers there.
-                var quizCompletionWindow = new QuizCompletionOverviewWindow(newRecordID, score, _missedQuestions.Count, _quiz, _quizRecordManager);
-                var result = quizCompletionWindow.ShowDialog();
-                if(result == false)
+                // If it is already in the _answers list - _answers.Count == _questions.Count.
+                // Overwrite the answer!
+                else if(_answers.Count == _questions.Count)
                 {
-                    this.DialogResult = false;
-                    this.Close();                                                                                 
+                    _answers[_count] = answer;
+                }
+
+
+                // Submit the test.
+                // Check they actually answered all questions.
+                if(_answers.Count == _questions.Count)
+                {
+                    // Calculate their score - how many they got right, & how many they missed.
+
+                    // How many question did they miss?
+                    for(int i = 0; i < _questions.Count; i++)
+                    {
+                        // Count through, if their answer does NOT equal the correct answer,
+                        // add it to _missedQuestions.
+                        if(_questions[i].CorrectAnswer.ToLower() != _answers[i].ToLower())
+                        {
+                            _missedQuestions.Add(_questions[i]);
+                        }
+                    }
+
+                    // Divide number of correct questions by the quiz question count.
+                    decimal score = (decimal)(_questions.Count - _missedQuestions.Count) / (decimal)_questions.Count;
+
+                    // Round, to calculate it to 2 decimal places.
+                    score = Decimal.Round((score *= 100), 2);
+
+                    // Insert their QuizRecord.
+                    // Get the ID, in case they missed any questions.
+                    int newRecordID = addQuizRecord(score);
+
+                    // If _missedQuestions.Count > 0, then insert all missed questions into the DB.
+                    if(_missedQuestions.Count > 0)
+                    {
+                        foreach(Question q in _missedQuestions)
+                        {
+                            // Add to DB.
+                            addMissedQuestion(newRecordID, q);
+                        }
+                    }
+
+                    // Go to QuizCompletionOverviewWindow & display their score.
+                    // They have the option to Retake the Quiz & Review the correct answers there.
+                    var quizCompletionWindow = new QuizCompletionOverviewWindow(_user, newRecordID, score, _missedQuestions.Count, _quiz, _questionManager, _quizRecordManager);
+                    var result = quizCompletionWindow.ShowDialog();
+                    if(result == false)
+                    {
+                        this.DialogResult = false;
+                        this.Close();
+                    }
                 }
             }
         }
@@ -572,39 +667,83 @@ namespace QuizNestPresentation
         }
         private void loadAnswer()
         {
-            if(_questions[_count].QuestionTypeID == "Multiple Choice")
+            if(_attemptType == null)
             {
-                if(rdoAnswer1.Content as string == _answers[_count])
+                // Load the correct answer.
+
+                if(_questions[_count].QuestionTypeID == "Multiple Choice")
                 {
-                    rdoAnswer1.IsChecked = true;
+                    if(rdoAnswer1.Content as string == _questions[_count].CorrectAnswer)
+                    {
+                        rdoAnswer1.IsChecked = true;
+                    }
+                    else if(rdoAnswer2.Content as string == _questions[_count].CorrectAnswer)
+                    {
+                        rdoAnswer2.IsChecked = true;
+                    }
+                    else if(rdoAnswer3.Content as string == _questions[_count].CorrectAnswer)
+                    {
+                        rdoAnswer3.IsChecked = true;
+                    }
+                    else if(rdoAnswer4.Content as string == _questions[_count].CorrectAnswer)
+                    {
+                        rdoAnswer4.IsChecked = true;
+                    }
                 }
-                else if(rdoAnswer2.Content as string == _answers[_count])
+                if(_questions[_count].QuestionTypeID == "True/False")
                 {
-                    rdoAnswer2.IsChecked = true;
+                    if(rdoAnswer2.Content as string == _questions[_count].CorrectAnswer)
+                    {
+                        rdoAnswer2.IsChecked = true;
+                    }
+                    else if(rdoAnswer3.Content as string == _questions[_count].CorrectAnswer)
+                    {
+                        rdoAnswer3.IsChecked = true;
+                    }
                 }
-                else if(rdoAnswer3.Content as string == _answers[_count])
+                if(_questions[_count].QuestionTypeID == "Short Answer")
                 {
-                    rdoAnswer3.IsChecked = true;
-                }
-                else if(rdoAnswer4.Content as string == _answers[_count])
-                {
-                    rdoAnswer4.IsChecked = true;
+                    txtYourAnswer.Text = _questions[_count].CorrectAnswer;
                 }
             }
-            if(_questions[_count].QuestionTypeID == "True/False")
+            else
             {
-                if(rdoAnswer2.Content as string == _answers[_count])
+                // Load a question they answered.
+
+                if(_questions[_count].QuestionTypeID == "Multiple Choice")
                 {
-                    rdoAnswer2.IsChecked = true;
+                    if(rdoAnswer1.Content as string == _answers[_count])
+                    {
+                        rdoAnswer1.IsChecked = true;
+                    }
+                    else if(rdoAnswer2.Content as string == _answers[_count])
+                    {
+                        rdoAnswer2.IsChecked = true;
+                    }
+                    else if(rdoAnswer3.Content as string == _answers[_count])
+                    {
+                        rdoAnswer3.IsChecked = true;
+                    }
+                    else if(rdoAnswer4.Content as string == _answers[_count])
+                    {
+                        rdoAnswer4.IsChecked = true;
+                    }
                 }
-                else if(rdoAnswer3.Content as string == _answers[_count])
+                if(_questions[_count].QuestionTypeID == "True/False")
                 {
-                    rdoAnswer3.IsChecked = true;
+                    if(rdoAnswer2.Content as string == _answers[_count])
+                    {
+                        rdoAnswer2.IsChecked = true;
+                    }
+                    else if(rdoAnswer3.Content as string == _answers[_count])
+                    {
+                        rdoAnswer3.IsChecked = true;
+                    }
                 }
-            }
-            if(_questions[_count].QuestionTypeID == "Short Answer")
-            {
-                txtYourAnswer.Text = _answers[_count];
+                if(_questions[_count].QuestionTypeID == "Short Answer")
+                {
+                    txtYourAnswer.Text = _answers[_count];
+                }
             }
         }
         private void clearAnswer()
@@ -714,7 +853,11 @@ namespace QuizNestPresentation
         {
             try
             {
-                _quizRecordManager.AddMissedQuestion(newRecordID, q.QuestionID);
+                bool result = _quizRecordManager.AddMissedQuestion(newRecordID, q.QuestionID);
+                if(result == false)
+                {
+                    throw new Exception("Missed Question Not Recorded...");
+                }
             }
             catch(Exception ex)
             {
@@ -735,6 +878,17 @@ namespace QuizNestPresentation
             if(_attemptType == "Missed Only")
             {
                 winTakeReviewQuizWindow.Title = $"Retake Quiz - {_quiz.Name} | Missed Only - Question {_count + 1}";
+            }
+            if(_attemptType == null)
+            {
+                if(_isReviewingMissedOnly == true)
+                {
+                    winTakeReviewQuizWindow.Title = $"Review Quiz - {_quiz.Name} | Missed Only - Question {_count + 1}";
+                }
+                if(_isReviewingMissedOnly == false)
+                {
+                    winTakeReviewQuizWindow.Title = $"Review Quiz - {_quiz.Name} - Question {_count + 1}";
+                }
             }
         }
     }

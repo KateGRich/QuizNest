@@ -17,5 +17,6 @@ namespace DataAccessInterfaces
         int InsertNewQuizTopic(string quizTopic, string description);
         int InsertNewQuiz(string quizTopicID, string name, int userID, string description); // Returns new QuizID.
         int UpdateQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive);
+        QuizVM SelectQuizByID(int quizID);
     }
 }

@@ -16,5 +16,6 @@ namespace LogicLayer
         bool AddNewQuizTopic(string quizTopic, string description);
         int AddNewQuiz(string quizTopicID, string name, int userID, string description); // Returns new QuizID.
         bool EditQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive);
+        QuizVM GetQuizByID(int quizID);
     }
 }

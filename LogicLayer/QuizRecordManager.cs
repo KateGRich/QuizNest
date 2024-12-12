@@ -27,7 +27,7 @@ namespace LogicLayer
 
         public List<QuizRecordVM> GetQuizLeaderboard(int quizID)
         {
-            List<QuizRecordVM> leaderboard = null;
+            List<QuizRecordVM> leaderboard;
             try
             {
                 leaderboard = _quizRecordAccessor.SelectQuizLeaderboard(quizID);
@@ -101,7 +101,24 @@ namespace LogicLayer
 
         public bool EditQuizRecordIsPublicStatus(int quizRecordID, bool isPublic)
         {
-            throw new NotImplementedException();
+            bool updated = false;
+
+            int rowsAffected = 0;
+
+            try
+            {
+                rowsAffected = _quizRecordAccessor.UpdateQuizRecordIsPublicStatus(quizRecordID, isPublic);
+                if(rowsAffected == 1)
+                {
+                    updated = true;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Public Status Not Updated...", ex);
+            }
+
+            return updated;
         }
     }
 }

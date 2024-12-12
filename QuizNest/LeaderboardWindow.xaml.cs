@@ -23,10 +23,10 @@ namespace QuizNestPresentation
     public partial class LeaderboardWindow : Window
     {
         private IQuizRecordManager _quizRecordManager;
-        private List<QuizRecordVM> _leaderboard;
+        private List<QuizRecordVM>? _leaderboard;
         private Quiz _quiz;
         
-        public LeaderboardWindow(IQuizRecordManager quizRecordManager, Quiz quiz)
+        public LeaderboardWindow(IQuizRecordManager quizRecordManager, QuizVM quiz)
         {
             _quizRecordManager = quizRecordManager;
             _quiz = quiz;

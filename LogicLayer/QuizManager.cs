@@ -159,5 +159,21 @@ namespace LogicLayer
 
             return updated;
         }
+
+        public QuizVM GetQuizByID(int quizID)
+        {
+            QuizVM? quiz = null;
+
+            try
+            {
+                quiz = _quizAccessor.SelectQuizByID(quizID);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Quiz Not Found...", ex);
+            }
+
+            return quiz;
+        }
     }
 }

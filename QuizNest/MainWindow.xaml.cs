@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace QuizNest
 {
@@ -36,17 +37,15 @@ namespace QuizNest
         IQuizRecordManager _quizRecordManager = new QuizRecordManager();
         List<QuizRecordVM> _takenQuizzes;
 
-        IChatManager _chatManager = new ChatManager();
-        // For Users who have started Chats with an Admin
-        List<ChatVM> _startedChats;
-        // For Admins
-        List<ChatVM> _receivedChats;
+        //IChatManager _chatManager = new ChatManager();
+        //// For Users who have started Chats with an Admin
+        //List<ChatVM> _startedChats;
+        //// For Admins
+        //List<ChatVM> _receivedChats;
 
         public MainWindow()
         {
             InitializeComponent();
-            txtEmail.Text = "phill@tomlandryms.edu";
-            pwdPassword.Password = "P@ssw0rd";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -141,7 +140,6 @@ namespace QuizNest
                 grdUsers.ItemsSource = _users;
             }
         }
-
         private void btnEditUser_Click(object sender, RoutedEventArgs e)
         {
             if(grdUsers.SelectedItem != null)
@@ -201,7 +199,7 @@ namespace QuizNest
         {
             if(grdAllQuizzes.SelectedItem != null)
             {
-                var quiz = grdAllQuizzes.SelectedItem as Quiz;
+                var quiz = grdAllQuizzes.SelectedItem as QuizVM;
 
                 var leaderboardWindow = new LeaderboardWindow(_quizRecordManager, quiz);
                 leaderboardWindow.ShowDialog();
@@ -273,7 +271,6 @@ namespace QuizNest
                             _takenQuizzes = _quizRecordManager.GetTakenQuizzes(_user.UserID);
                             grdTakenQuizzes.ItemsSource = _takenQuizzes;
                         }
-
                     }
                 }
             }
@@ -283,26 +280,38 @@ namespace QuizNest
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-        private void btnRetakeQuiz_Click(object sender, RoutedEventArgs e)
+        private void btnOverview_Click(object sender, RoutedEventArgs e)
         {
             if(grdTakenQuizzes.SelectedItem != null)
             {
-                var reviewRetakeWindow = new ReviewRetakeWindow();
-                reviewRetakeWindow.ShowDialog();
+                var quizRecord = grdTakenQuizzes.SelectedItem as QuizRecordVM;
+
+                QuizVM quiz;
+
+                try
+                {
+                    quiz = _quizManager.GetQuizByID(quizRecord.QuizID);
+
+                    if(quiz != null)
+                    {
+                        var quizOverviewWindow = new QuizCompletionOverviewWindow(_user, quizRecord, quiz, _questionManager, _quizRecordManager);
+                        var result = quizOverviewWindow.ShowDialog();
+                        if(result == false)
+                        {
+                            _takenQuizzes = _quizRecordManager.GetTakenQuizzes(_user.UserID);
+                            grdTakenQuizzes.ItemsSource = _takenQuizzes;
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
+                    MessageBox.Show(message);
+                }
             }
             else
             {
-                MessageBox.Show("You must select a quiz in order to retake one.", "No Selection");
+                MessageBox.Show("You must select a record in order to view a record's details.", "No Selection");
             }
         }
 
@@ -358,20 +367,19 @@ namespace QuizNest
         }
 
 
-
         // Chat Tab Methods
-        private void btnViewMessages_Click(object sender, RoutedEventArgs e)
-        {
-            if(grdMyChats.SelectedItem != null)
-            {
-                var viewSendMessagesWindow = new ViewSendMessagesWindow();
-                viewSendMessagesWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("You must select a chat in order to view messages.", "No Selection");
-            }
-        }
+        //private void btnViewMessages_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if(grdMyChats.SelectedItem != null)
+        //    {
+        //        var viewSendMessagesWindow = new ViewSendMessagesWindow();
+        //        viewSendMessagesWindow.ShowDialog();
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("You must select a chat in order to view messages.", "No Selection");
+        //    }
+        //}
 
 
         // Tab Set Selection Change Methods
@@ -416,29 +424,29 @@ namespace QuizNest
                 }
             }
         }
-        private void tabSetChats_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(e.Source is TabControl)
-            {
-                string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
+        //private void tabSetChats_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if(e.Source is TabControl)
+        //    {
+        //        string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
-                switch(tabItem)
-                {
-                    case "Start New":
-                        break;
-                    case "My Chats":
-                        if(_user.Roles.Contains("Admin"))
-                        {
-                            showReceivedChats();
-                        }
-                        else
-                        {
-                            showStartedChats();
-                        }
-                        break;
-                }
-            }
-        }
+        //        switch(tabItem)
+        //        {
+        //            case "Start New":
+        //                break;
+        //            case "My Chats":
+        //                if(_user.Roles.Contains("Admin"))
+        //                {
+        //                    showReceivedChats();
+        //                }
+        //                else
+        //                {
+        //                    showStartedChats();
+        //                }
+        //                break;
+        //        }
+        //    }
+        //}
 
 
         // Helper Methods
@@ -473,11 +481,12 @@ namespace QuizNest
             {
                 item.Visibility = Visibility.Collapsed;
             }
-            foreach(TabItem item in tabSetChats.Items)
-            {
-                item.Visibility = Visibility.Collapsed;
-            }
+            //foreach(TabItem item in tabSetChats.Items)
+            //{
+            //    item.Visibility = Visibility.Collapsed;
+            //}
         }
+
         private void showUserTabs()
         {
             tabQuizzes.Visibility = Visibility.Visible;
@@ -499,9 +508,9 @@ namespace QuizNest
                         btnTakeQuiz.Visibility = Visibility.Hidden;
                         btnTakeQuiz.IsEnabled = false;
 
-                        tabStartChat.Visibility = Visibility.Collapsed; // Admins cannot start chats.
-                        tabMyChats.Visibility = Visibility.Visible;
-                        tabMyChats.IsSelected = true;
+                        //tabStartChat.Visibility = Visibility.Collapsed; // Admins cannot start chats.
+                        //tabMyChats.Visibility = Visibility.Visible;
+                        //tabMyChats.IsSelected = true;
                         break;
                     case "Quiz Maker":
                         tabQuizzes.IsSelected = true;
@@ -511,9 +520,9 @@ namespace QuizNest
                         tabMyQuizzes.Visibility = Visibility.Visible;
                         tabMyQuizzes.IsSelected = true;
 
-                        tabStartChat.Visibility = Visibility.Visible;
-                        tabMyChats.Visibility = Visibility.Visible;
-                        tabStartChat.IsSelected = true;
+                        //tabStartChat.Visibility = Visibility.Visible;
+                        //tabMyChats.Visibility = Visibility.Visible;
+                        //tabStartChat.IsSelected = true;
                         break;
                     case "Quiz Taker":
                         tabQuizzes.IsSelected = true;
@@ -523,9 +532,9 @@ namespace QuizNest
                         tabTakenQuizzes.Visibility = Visibility.Visible;
                         tabTakenQuizzes.IsSelected = true;
 
-                        tabStartChat.Visibility = Visibility.Visible;
-                        tabMyChats.Visibility = Visibility.Visible;
-                        tabStartChat.IsSelected = true;
+                        //tabStartChat.Visibility = Visibility.Visible;
+                        //tabMyChats.Visibility = Visibility.Visible;
+                        //tabStartChat.IsSelected = true;
                         break;
                 }
             }
@@ -535,17 +544,17 @@ namespace QuizNest
                 // If user is an Admin, but has multiple roles - this will force them to
                 // default to the Users tab, despite their other roles.
                 tabUsers.IsSelected = true;
-                tabChat.Header = "Chats";
+                //tabChat.Header = "Chats";
 
                 // Admins cannot start chats, even if they have multiple roles.
-                tabStartChat.Visibility = Visibility.Collapsed;
-                tabMyChats.IsSelected = true;
+                //tabStartChat.Visibility = Visibility.Collapsed;
+                //tabMyChats.IsSelected = true;
             }
             else
             {
                 // If an admin was logged in, but doesn't exit the application completely,
                 // reset the Header on tabChat to what non-Admins would see.
-                tabChat.Header = "Chat With Admin";
+                //tabChat.Header = "Chat With Admin";
             }
 
             if(_user.Roles.Contains("Quiz Maker"))
@@ -562,10 +571,9 @@ namespace QuizNest
             }
 
             tabProfile.Visibility = Visibility.Visible;
-            tabChat.Visibility = Visibility.Visible;
+            //tabChat.Visibility = Visibility.Visible;
             tabContainer.Visibility = Visibility.Visible;
         }
-
         private void showAllUsers()
         {
             try
@@ -616,20 +624,20 @@ namespace QuizNest
                 if(_takenQuizzes.Count == 0)
                 {
                     grdTakenQuizzes.Visibility = Visibility.Hidden;
-                    btnRetakeQuiz.Visibility = Visibility.Hidden;
-                    btnRetakeQuiz.IsEnabled = false;
-                    btnReviewAnswers.Visibility = Visibility.Hidden;
-                    btnReviewAnswers.IsEnabled = false;
+                    btnOverview.Visibility = Visibility.Hidden;
+                    btnOverview.IsEnabled = false;
+                    txtRetakeReviewMessage.Visibility = Visibility.Hidden;
+                    txtRetakeReviewMessage.IsEnabled = false;
 
                     txtNoTakenQuizzes.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     grdTakenQuizzes.Visibility = Visibility.Visible;
-                    btnRetakeQuiz.Visibility = Visibility.Visible;
-                    btnRetakeQuiz.IsEnabled = true;
-                    btnReviewAnswers.Visibility = Visibility.Visible;
-                    btnReviewAnswers.IsEnabled = true;
+                    btnOverview.Visibility = Visibility.Visible;
+                    btnOverview.IsEnabled = true;
+                    txtRetakeReviewMessage.Visibility = Visibility.Visible;
+                    txtRetakeReviewMessage.IsEnabled = true;
 
                     txtNoTakenQuizzes.Visibility = Visibility.Hidden;
 
@@ -643,70 +651,70 @@ namespace QuizNest
             }
         }
 
-        private void showStartedChats()
-        {
-            try
-            {
-                txtNoReceivedChats.Visibility = Visibility.Hidden;
+        //private void showStartedChats()
+        //{
+        //    try
+        //    {
+        //        txtNoReceivedChats.Visibility = Visibility.Hidden;
 
-                _startedChats = _chatManager.GetStartedChats(_user.UserID);
-                if(_startedChats.Count == 0)
-                {
-                    grdMyChats.Visibility = Visibility.Hidden;
-                    btnViewMessages.Visibility = Visibility.Hidden;
-                    btnViewMessages.IsEnabled = false;
+        //        _startedChats = _chatManager.GetStartedChats(_user.UserID);
+        //        if(_startedChats.Count == 0)
+        //        {
+        //            grdMyChats.Visibility = Visibility.Hidden;
+        //            btnViewMessages.Visibility = Visibility.Hidden;
+        //            btnViewMessages.IsEnabled = false;
 
-                    txtNoStartedChats.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    grdMyChats.Visibility = Visibility.Visible;
-                    btnViewMessages.Visibility = Visibility.Visible;
-                    btnViewMessages.IsEnabled = true;
+        //            txtNoStartedChats.Visibility = Visibility.Visible;
+        //        }
+        //        else
+        //        {
+        //            grdMyChats.Visibility = Visibility.Visible;
+        //            btnViewMessages.Visibility = Visibility.Visible;
+        //            btnViewMessages.IsEnabled = true;
 
-                    txtNoStartedChats.Visibility = Visibility.Hidden;
-                    grdColSender.Visibility = Visibility.Hidden;
-                    grdColSentTo.Visibility = Visibility.Visible;
-                    grdMyChats.ItemsSource = _startedChats;
-                }
-            }
-            catch(Exception ex)
-            {
-                string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
-                MessageBox.Show(message);
-            }
-        }
-        private void showReceivedChats()
-        {
-            try
-            {
-                txtNoStartedChats.Visibility = Visibility.Hidden;
+        //            txtNoStartedChats.Visibility = Visibility.Hidden;
+        //            grdColSender.Visibility = Visibility.Hidden;
+        //            grdColSentTo.Visibility = Visibility.Visible;
+        //            grdMyChats.ItemsSource = _startedChats;
+        //        }
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
+        //        MessageBox.Show(message);
+        //    }
+        //}
+        //private void showReceivedChats()
+        //{
+        //    try
+        //    {
+        //        txtNoStartedChats.Visibility = Visibility.Hidden;
 
-                _receivedChats = _chatManager.GetReceivedChats(_user.UserID);
-                if(_receivedChats.Count == 0)
-                {
-                    grdMyChats.Visibility = Visibility.Hidden;
-                    btnViewMessages.Visibility = Visibility.Hidden;
-                    btnViewMessages.IsEnabled = false;
+        //        _receivedChats = _chatManager.GetReceivedChats(_user.UserID);
+        //        if(_receivedChats.Count == 0)
+        //        {
+        //            grdMyChats.Visibility = Visibility.Hidden;
+        //            btnViewMessages.Visibility = Visibility.Hidden;
+        //            btnViewMessages.IsEnabled = false;
 
-                    txtNoReceivedChats.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    grdMyChats.Visibility = Visibility.Visible;
-                    btnViewMessages.Visibility = Visibility.Visible;
-                    btnViewMessages.IsEnabled = true;
+        //            txtNoReceivedChats.Visibility = Visibility.Visible;
+        //        }
+        //        else
+        //        {
+        //            grdMyChats.Visibility = Visibility.Visible;
+        //            btnViewMessages.Visibility = Visibility.Visible;
+        //            btnViewMessages.IsEnabled = true;
 
-                    txtNoReceivedChats.Visibility = Visibility.Hidden;
-                    grdColSentTo.Visibility = Visibility.Hidden;
-                    grdMyChats.ItemsSource = _receivedChats;
-                }
-            }
-            catch(Exception ex)
-            {
-                string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
-                MessageBox.Show(message);
-            }
-        }
+        //            txtNoReceivedChats.Visibility = Visibility.Hidden;
+        //            grdColSentTo.Visibility = Visibility.Hidden;
+        //            grdMyChats.ItemsSource = _receivedChats;
+        //        }
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        string message = ex.InnerException == null ? ex.Message : ex.Message + "\n\n" + ex.InnerException.Message;
+        //        MessageBox.Show(message);
+        //    }
+        //}
     }
 }

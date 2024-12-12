@@ -158,6 +158,10 @@ namespace QuizNestPresentation
                 else
                 {
                     // Editing an existing quiz - adding new Questions.
+
+                    // Do both - _newQuestions keeps track of newly added.
+                    _questions.Add(saveQuestion());
+
                     _newQuestions.Add(saveQuestion());
                 }
 
@@ -297,11 +301,16 @@ namespace QuizNestPresentation
 
                     if(_editQuiz == null)
                     {
+                        // Creating a new quiz.
                         _questions.Add(saveQuestion());
                     }
                     else
                     {
                         // Editing an existing quiz - adding new Questions.
+
+                        // Do both - _newQuestions just keeps track of what needs added to the DB.
+                        _questions.Add(saveQuestion());
+
                         _newQuestions.Add(saveQuestion());
                     }
 
@@ -325,7 +334,7 @@ namespace QuizNestPresentation
                     loadPreviousNextCreatedQuestion();
                 }
             }
-            else if(_count <= _questions.Count) // this is the last question, moving back to an existing question
+            else if(_count + 1 <= _questions.Count) // this is an existing question or the last question, moving back to an existing question
             {
                 // validate and offer to overwrite _question[_count], then go back to the previous question
                 var result = MessageBox.Show("Would you like to save these changes, if any?\nYour current question will still be saved by clicking 'Yes', if no changes were made.",
@@ -444,6 +453,15 @@ namespace QuizNestPresentation
                         {
                             if(_newQuestions.Count > 0)
                             {
+                                int startAddingHere = (_questions.Count - _newQuestions.Count);
+                                for(int i = startAddingHere; startAddingHere < _questions.Count; startAddingHere++)
+                                {
+                                    for(int j = 0; j < _newQuestions.Count; j++)
+                                    {
+                                        _newQuestions[j] = _questions[i];
+                                    }
+                                }
+
                                 // Add any new questions that were added while editing.
                                 addNewQuizQuestions(_editQuiz.QuizID);
                             }
@@ -571,6 +589,15 @@ namespace QuizNestPresentation
                         {
                             if(_newQuestions.Count > 0)
                             {
+                                int startAddingHere = (_questions.Count - _newQuestions.Count);
+                                for(int i = startAddingHere; startAddingHere < _questions.Count; startAddingHere++)
+                                {
+                                    for(int j = 0; j < _newQuestions.Count; j++)
+                                    {
+                                        _newQuestions[j] = _questions[i];
+                                    }
+                                }
+
                                 // Add any new questions that were added while editing..
                                 addNewQuizQuestions(_editQuiz.QuizID);
                             }
@@ -639,6 +666,15 @@ namespace QuizNestPresentation
                         {
                             if(_newQuestions.Count > 0)
                             {
+                                int startAddingHere = (_questions.Count - _newQuestions.Count);
+                                for(int i = startAddingHere; startAddingHere < _questions.Count; startAddingHere++)
+                                {
+                                    for(int j = 0; j < _newQuestions.Count; j++)
+                                    {
+                                        _newQuestions[j] = _questions[i];
+                                    }
+                                }
+
                                 // Add any new questions that were added while editing..
                                 addNewQuizQuestions(_editQuiz.QuizID);
                             }
@@ -1082,7 +1118,7 @@ namespace QuizNestPresentation
         {
             try
             {
-                for(int i = 0; i < _questions.Count; i++)
+                for(int i = 0; i < _questions.Count - _newQuestions.Count; i++)
                 {
                     bool questionResult = _questionManager.EditQuestionInformation(questions[i].QuestionID, questions[i].QuestionTypeID, quizID,
                                                 questions[i].Prompt, questions[i].Answer1, questions[i].Answer2, questions[i].Answer3,

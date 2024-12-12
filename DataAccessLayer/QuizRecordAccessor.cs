@@ -19,6 +19,7 @@ namespace DataAccessLayer
             var conn = DBConnection.GetConnection();
             var cmd = new SqlCommand("sp_select_quiz_leaderboard", conn);
             cmd.CommandType = CommandType.StoredProcedure;
+
             cmd.Parameters.Add("@QuizID", SqlDbType.Int);
             cmd.Parameters["@QuizID"].Value = quizID;
             try
@@ -76,7 +77,8 @@ namespace DataAccessLayer
                         QuizName = reader.GetString(3),
                         Score = reader.GetDecimal(4),
                         AttemptTypeID = reader.GetString(5),
-                        DateTaken = reader.GetDateTime(6)
+                        DateTaken = reader.GetDateTime(6),
+                        IsPublic = reader.GetBoolean(7)
                     });
                 }
             }
@@ -159,7 +161,33 @@ namespace DataAccessLayer
 
         public int UpdateQuizRecordIsPublicStatus(int quizRecordID, bool isPublic)
         {
-            throw new NotImplementedException();
+            int result = 0;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_update_quizRecord_isPublic_status", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizRecordID", SqlDbType.Int);
+            cmd.Parameters.Add("@IsPublic", SqlDbType.Bit);
+
+            cmd.Parameters["@QuizRecordID"].Value = quizRecordID;
+            cmd.Parameters["@IsPublic"].Value = isPublic;
+
+            try
+            {
+                conn.Open();
+                result = cmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return result;
         }
     }
 }

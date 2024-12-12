@@ -263,5 +263,46 @@ namespace DataAccessLayer
 
             return result;
         }
+
+        public QuizVM SelectQuizByID(int quizID)
+        {
+            QuizVM? quiz = null;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_quiz_by_quizID", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
+            cmd.Parameters["@QuizID"].Value = quizID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                if(reader.HasRows)
+                {
+                    reader.Read();
+                    quiz = new QuizVM()
+                    {
+                        QuizID = reader.GetInt32(0),
+                        QuizTopicID = reader.GetString(1),
+                        Name = reader.GetString(2),
+                        CreatedBy = reader.GetInt32(3),
+                        Description = reader.GetString(4),
+                        CreatedOn = reader.GetDateTime(5),
+                        Active = reader.GetBoolean(6)
+                    };
+                }
+                else
+                {
+                    throw new ArgumentException("Quiz Not Found...");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No Record Found...", ex);
+            }
+
+            return quiz;
+        }
     }
 }
