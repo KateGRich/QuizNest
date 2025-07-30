@@ -1,0 +1,57 @@
+﻿@using DataDomain;
+
+@model DataDomain.ChatVM
+
+@{
+    ViewData["Title"] = "NewChat";
+
+    IEnumerable<string> types = ViewBag.Types;
+    IEnumerable<string> descriptions = ViewBag.Descriptions;
+    IEnumerable<User> admins = ViewBag.Admins;
+    int userID = ViewBag.UserID;
+}
+
+<h1>New Chat with Admin</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <form asp-action="NewChat">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input asp-for="Originator" class="form-control" value ="@userID" hidden />
+            <input asp-for="CreatedOn" class="form-control" value="@DateTime.Now" hidden />
+
+            <div class="form-group">
+                <label asp-for="ChatTypeID" class="control-label"></label>
+                @Html.DropDownListFor(m => m.ChatTypeID, new SelectList(types), "Choose Chat Topic", new { @class = "form-control" })
+                <span asp-validation-for="ChatTypeID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-2">
+                <label asp-for="RecipientName" class="control-label">Send To</label>
+                <select asp-for="Recipient" class="form-control">
+                    @foreach(var admin in admins)
+                    {
+                        <option value="@admin.UserID">@admin.GivenName @admin.FamilyName</option>
+                    }
+                </select>
+                <span asp-validation-for="Recipient" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mt-2">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group text-center mt-3">
+                <a asp-action="MyChats" class="btn btn-warn me-2">Cancel</a>
+                <input type="submit" value="Send" class="btn btn-main" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,49 @@
+﻿@model DataDomain.QuizRecordVM
+
+@{
+    ViewData["Title"] = "Score - " + Model.QuizName;
+
+    int missedQuestions = ViewBag.MissedQuestions;
+}
+
+<h1>Your @Model.AttemptTypeID Attempt for @Model.QuizName</h1>
+<hr/>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow card-registration col-md-6" style="border-radius: 15px;">
+        <div class="card-body p-4 p-md-5">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayName("Missed Questions")
+                </dt>
+                <dd class="col-sm-8">
+                    @missedQuestions
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.FormattedScore)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.FormattedScore)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.FormattedDate)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.FormattedDate)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.IsPublic)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.IsPublic)
+                </dd>
+            </dl>
+            <div class="text-center mt-3">
+                <a asp-action="TakenQuizzes" asp-controller="Quiz" class="btn btn-main">Taken Quizzes</a>
+            </div>
+        </div>
+    </div>
+</div>

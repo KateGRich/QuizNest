@@ -130,27 +130,22 @@ namespace DataAccessFakes
             throw new NotImplementedException();
         }
 
-        public int InsertNewUser(string givenName, string familyName, string email, string phoneNumber)
+        public int InsertNewUser(User user)
         {
             throw new NotImplementedException();
         }
 
-        public int InserNewUserRole(int userID, string roleID)
+        public int InserNewUserRole(UserRole userRole)
         {
             throw new NotImplementedException();
         }
 
-        public int UpdateUserInformation(string oldGivenName, string newGivenName, string oldFamilyName, string newFamilyName, string oldEmail, string newEmail, string? oldPhoneNumber, string? newPhoneNumber, bool oldActive, bool newActive, DateTime? oldReactivationDate, DateTime? newReactivationDate)
+        public int DeleteUserRole(UserRole userRole)
         {
             throw new NotImplementedException();
         }
 
-        public int DeleteUserRole(int userID, string roleID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int UpdateUserInformation(int userID, string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber, bool newActive, DateTime? newReactivationDate)
+        public int UpdateUserInformation(User user, User updatedUser)
         {
             throw new NotImplementedException();
         }

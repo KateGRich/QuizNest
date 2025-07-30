@@ -13,9 +13,9 @@ namespace LogicLayer
         List<QuizVM> GetAllActiveQuizes();
         List<QuizTopic> GetAllQuizTopics();
         List<string> GetAllQuestionTypes();
-        bool AddNewQuizTopic(string quizTopic, string description);
-        int AddNewQuiz(string quizTopicID, string name, int userID, string description); // Returns new QuizID.
-        bool EditQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive);
+        bool AddNewQuizTopic(QuizTopic quizTopic);
+        int AddNewQuiz(Quiz quiz); // Returns new QuizID.
+        bool EditQuizInformation(Quiz quiz, Quiz newQuiz);
         QuizVM GetQuizByID(int quizID);
     }
 }

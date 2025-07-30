@@ -1,0 +1,147 @@
+﻿@using DataDomain;
+
+@model DataDomain.QuestionVM
+
+@{
+    ViewData["Title"] = "View Question";
+}
+
+@if(Model == null) {
+    int quizID = ViewBag.QuizID;
+    string quizName = ViewBag.QuizName;
+    int count = ViewBag.Count;
+
+    <h1>@quizName - Questions</h1>
+
+    <hr />
+
+    <div class="text-center">
+        <h4>This quiz has zero questions. Add one now!</h4>
+        @Html.ActionLink("Add Question", "Create", new { id = quizID }, new { @class = "btn btn-main" })
+    </div>
+}
+else {
+    int quizID = ViewBag.QuizID;
+    string quizName = ViewBag.QuizName;
+    int count = ViewBag.Count;
+
+    <h1>@quizName - Questions</h1>
+
+    <hr />
+
+    <div class="d-flex justify-content-center">
+        <div class="card shadow card-registration col-md-6" style="border-radius: 15px;">
+            <div class="card-body p-4 p-md-5">
+                <h4>Question @Model.QuestionNumber</h4>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Prompt)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Prompt)
+                    </dd>
+
+                    @if (Model.QuestionTypeID == "Multiple Choice")
+                    {
+
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Answer1)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Answer1) @if (Model.Answer1 == Model.CorrectAnswer)
+                            {
+                                <text>***</text>
+                            }
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Answer2)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Answer2) @if (Model.Answer2 == Model.CorrectAnswer)
+                            {
+                                <text>***</text>
+                            }
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Answer3)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Answer3) @if (Model.Answer3 == Model.CorrectAnswer)
+                            {
+                                <text>***</text>
+                            }
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Answer4)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Answer4) @if (Model.Answer4 == Model.CorrectAnswer)
+                            {
+                                <text>***</text>
+                            }
+                        </dd>
+                        <dt class="text-muted mt-1" style="font-style: italic">
+                            *** Indicates Correct Answer
+                        </dt>
+                    }
+                    else
+                    {
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.CorrectAnswer)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CorrectAnswer)
+                        </dd>
+                    }
+                    @if(Model.EnableEdit == true)
+                    {
+                        <dt class="col-sm-4 mt-4">
+                            @Html.DisplayNameFor(model => model.Active)
+                        </dt>
+                        <dd class="col-sm-8 mt-4">
+                            @Html.DisplayFor(model => model.Active)
+                        </dd>
+                    }
+                </dl>
+
+                <div class="text-center mt-1">
+                    @if(Model.QuestionNumber > 1)
+                    {
+                        @Html.ActionLink("Back", "ViewQuestion", new { id = Model.QuizID, questionNumber = (Model.QuestionNumber - 1), enableEdit = Model.EnableEdit }, new { @class = "btn btn-second me-5" })
+                    }
+
+                    @if(Model.QuestionNumber < count)
+                    {
+                        @Html.ActionLink("Next", "ViewQuestion", new { id = Model.QuizID, questionNumber = (Model.QuestionNumber + 1), enableEdit = Model.EnableEdit }, new { @class = "btn btn-second ms-5" })
+                    }
+                </div>
+
+                @if(Model.EnableEdit == true)
+                {
+                    <div class="text-center mt-1">
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.QuestionID, questionNumber = Model.QuestionNumber }, new { @class = "btn btn-warn" })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        @if(Model.EnableEdit == true)
+        {
+            @if(User.IsInRole("Admin")) {
+                @Html.ActionLink("Back to All Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-main" });
+            }
+            else
+            {
+                @Html.ActionLink("Back to My Quizzes", "MyQuizzes", "Quiz", null, new { @class = "btn btn-main me-2" })
+                @Html.ActionLink("Add New Question", "Create", new { id = Model.QuizID }, new { @class = "btn btn-third" })
+            }
+        }
+        else
+        {
+            @Html.ActionLink("Back to Taken Quizzes", "TakenQuizzes", "Quiz", null, new { @class = "btn btn-main" })
+        }
+    </div>
+}

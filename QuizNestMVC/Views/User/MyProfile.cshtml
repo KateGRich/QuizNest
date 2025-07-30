@@ -1,0 +1,49 @@
+﻿@model DataDomain.UserVM
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<h1>My Profile</h1>
+
+<hr />
+<div class="d-flex justify-content-center">
+    <div class="card shadow card-registration col-md-8" style="border-radius: 15px;">
+        <div class="card-body p-4 p-md-5">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.RoleList)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.RoleList)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </dd>
+            </dl>
+            <div class="text-center mt-3">
+                @Html.ActionLink("Edit", "Edit", new { id = Model.UserID }, new { @class = "btn btn-warn me-2" })
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" title="Manage" class="btn btn-third me-2">Reset Password</a>
+                @if(!User.IsInRole("Admin"))
+                {
+                    @Html.ActionLink("Delete My Account", "Deactivate", new { id = Model.UserID }, new { @class = "btn btn-danger ms-2" })
+                }
+            </div>
+        </div>
+    </div>
+</div>

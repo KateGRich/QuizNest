@@ -167,7 +167,7 @@ namespace LogicLayer
             return users;
         }
 
-        public bool AddNewUser(string givenName, string familyName, string email, string phoneNumber, List<string> roles)
+        public bool AddNewUser(User user, List<string> roles)
         {
             bool added = false;
             
@@ -179,15 +179,20 @@ namespace LogicLayer
 
             try
             {
-                rowsAffected = _userAccessor.InsertNewUser(givenName, familyName, email, phoneNumber);
+                rowsAffected = _userAccessor.InsertNewUser(user);
                 if(rowsAffected == 1)
                 {
-                    newUser = _userAccessor.SelectUserByEmail(email);
+                    newUser = _userAccessor.SelectUserByEmail(user.Email);
                     newUserID = newUser.UserID;
 
                     foreach(string role in roles)
                     {
-                        rowsAffected = _userAccessor.InserNewUserRole(newUserID, role);
+                        UserRole userRole = new UserRole()
+                        {
+                            UserID = newUserID,
+                            RoleID = role
+                        };
+                        rowsAffected = _userAccessor.InserNewUserRole(userRole);
                         if(rowsAffected == 0)
                         {
                             throw new Exception("Role not added...");
@@ -205,8 +210,7 @@ namespace LogicLayer
             return added;
         }
 
-        public bool EditUserInformation(string newGivenName, string newFamilyName, string newEmail, string newPhoneNumber,
-                                    bool newActive, DateTime? newReactivationDate, UserVM userEdit, List<string> newRoles)
+        public bool EditUserInformation(UserVM userEdit, User updatedUser, List<string> newRoles)
         {
             bool updated = false;
 
@@ -219,8 +223,7 @@ namespace LogicLayer
 
             try
             {
-                rowsAffected = _userAccessor.UpdateUserInformation(editUser.UserID, newGivenName, newFamilyName, newEmail, newPhoneNumber,
-                                                    newActive, newReactivationDate);
+                rowsAffected = _userAccessor.UpdateUserInformation(editUser, updatedUser);
                 if(rowsAffected == 1)
                 {
                     foreach(string role in newRoles)
@@ -231,7 +234,12 @@ namespace LogicLayer
                         }
                         else
                         {
-                            rowsAffected = _userAccessor.InserNewUserRole(editUser.UserID, role);
+                            UserRole newRole = new UserRole()
+                            {
+                                UserID = userEdit.UserID,
+                                RoleID = role
+                            };
+                            rowsAffected = _userAccessor.InserNewUserRole(newRole);
                             if(rowsAffected == 0)
                             {
                                 throw new Exception("Role not added...");
@@ -247,7 +255,12 @@ namespace LogicLayer
                         }
                         else
                         {
-                            rowsAffected = _userAccessor.DeleteUserRole(editUser.UserID, role);
+                            UserRole userRole = new UserRole()
+                            {
+                                UserID = editUser.UserID,
+                                RoleID = role
+                            };
+                            rowsAffected = _userAccessor.DeleteUserRole(userRole);
                         }
                     }
                 }
@@ -270,6 +283,8 @@ namespace LogicLayer
             try
             {
                 user = _userAccessor.SelectUserByUserID(userID);
+
+                user.Roles = GetUserRoles(user.UserID);
             }
             catch(Exception ex)
             {

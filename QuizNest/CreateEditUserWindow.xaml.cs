@@ -208,20 +208,25 @@ namespace QuizNestPresentation
             }
 
             // Assign the values, once we know all input is valid.
-            string givenName = txtGivenName.Text;
-            string familyName = txtFamilyName.Text;
-            string email = txtEmail.Text;
-            string? phoneNumber = txtPhoneNumber.Text;
+            User newUserInfo = new User()
+            {
+                GivenName = txtGivenName.Text,
+                FamilyName = txtFamilyName.Text,
+                Email = txtEmail.Text,
+                PhoneNumber = txtPhoneNumber.Text
+            };
 
             if(_adminUser == null && _editUser != null)
             {
                 // User is editing their own info.
-                bool newActive = true;
-                DateTime? newReactivationDate = null;
+                newUserInfo.Active = true;
+                newUserInfo.ReactivationDate = null;
+                //bool newActive = true;
+                //DateTime? newReactivationDate = null;
 
                 try
                 {
-                    bool result = _userManager.EditUserInformation(givenName, familyName, email, phoneNumber, newActive, newReactivationDate, _editUser, _editUser.Roles);
+                    bool result = _userManager.EditUserInformation(_editUser, newUserInfo, _editUser.Roles);
                     if(result == false)
                     {
                         throw new Exception("Update Failed...");
@@ -265,7 +270,17 @@ namespace QuizNestPresentation
 
                 try
                 {
-                    bool result = _userManager.EditUserInformation(givenName, familyName, email, phoneNumber, newActive, newReactivationDate, _editUser, roles);
+                    User updatedUser = new User()
+                    {
+                        GivenName = _editUser.GivenName,
+                        FamilyName = _editUser.FamilyName,
+                        Email = _editUser.Email,
+                        PhoneNumber = _editUser.PhoneNumber,
+                        Active = newActive,
+                        ReactivationDate = newReactivationDate
+                    };
+
+                    bool result = _userManager.EditUserInformation(_editUser, updatedUser, roles);
                     if(result == false)
                     {
                         throw new Exception("Update Failed...");
@@ -288,7 +303,7 @@ namespace QuizNestPresentation
                 // Admin is creating a new User.
                 try
                 {
-                    bool result = _userManager.AddNewUser(givenName, familyName, email, phoneNumber, roles);
+                    bool result = _userManager.AddNewUser(newUserInfo, roles);
                     if(result == false)
                     {
                         throw new Exception("User not added...");

@@ -4,17 +4,26 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace DataDomain
 {
     public class User
     {
         public int UserID { get; set; }
+
+        [Display(Name = "Given Name")]
         public string GivenName { get; set; }
+
+        [Display(Name = "Family Name")]
         public string FamilyName { get; set; }
         public string Email { get; set; }
-        public string? PhoneNumber { get; set; }
-        public string PasswordHash { get; set; }
+
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
+        public string? PasswordHash { get; set; }
+
+        [Display(Name = "Reactivation Date")]
         public DateTime? ReactivationDate { get; set; }
         public bool Active { get; set; }
     }
@@ -22,6 +31,8 @@ namespace DataDomain
     {
         public string Name { get { return GivenName + " " + FamilyName; } }
         public List<string> Roles { get; set; }
+
+        [Display(Name = "Roles")]
         public string RoleList
         {
             get
@@ -53,7 +64,9 @@ namespace DataDomain
                 return roleList;
             }
         }
-        public string FormattedReactivationDate
+
+        [Display(Name = "Reactivation Date")]
+        public string? FormattedReactivationDate
         {
             get
             {

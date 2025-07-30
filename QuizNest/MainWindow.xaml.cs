@@ -63,14 +63,14 @@ namespace QuizNest
             string password = pwdPassword.Password;
 
             // Check that entered values are at least 8 characters long ("P@ssw0rd") and not longer than is allowed in the DB.
-            if(email.Length < 8 || email.Length > 250)
+            if(email.Length < 5 || email.Length > 250)
             {
                 MessageBox.Show("Invalid Email...");
                 txtEmail.Focus();
                 txtEmail.SelectAll();
                 return;
             }
-            if(password.Length < 8 || password.Length > 100)
+            if(password.Length < 5 || password.Length > 100)
             {
                 MessageBox.Show("Invalid Password...");
                 pwdPassword.Focus();
@@ -362,7 +362,16 @@ namespace QuizNest
                 MessageBox.Show("Your account was successfully deleted!");
 
                 // Reuse this method to explicitly save their current info, but set their Active status to false & their ReactivationDate to null.
-                _userManager.EditUserInformation(user.GivenName, user.FamilyName, user.Email, user.PhoneNumber, false, null, user, user.Roles);
+                User updatedUser = new User()
+                {
+                    GivenName = user.GivenName,
+                    FamilyName = user.FamilyName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Active = false,
+                    ReactivationDate = null
+                };
+                _userManager.EditUserInformation(user, updatedUser, user.Roles);
             }
         }
 

@@ -15,9 +15,13 @@ namespace LogicLayer
         List<string> GetUserRoles(int userID);
         UserVM LogInUser(string email, string password);
         List<UserVM> GetAllUsers();
-        bool AddNewUser(string givenName, string familyName, string email, string phoneNumber, List<string> roles);
-        bool EditUserInformation(string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
-                                bool newActive, DateTime? newReactivationDate, UserVM userEdit, List<string> newRoles);
+
+        bool AddNewUser(User user, List<string> roles);
+        //bool AddNewUser(string givenName, string familyName, string email, string phoneNumber, List<string> roles);
+        bool EditUserInformation(UserVM user, User updatedUser, List<string> newRoles);
+        //bool EditUserInformation(string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
+        //                        bool newActive, DateTime? newReactivationDate, UserVM userEdit, List<string> newRoles);
+        
         UserVM GetUserByUserID(int userID);
         public bool UpdatePassword(string email, string currentPassword, string newPassword);
     }

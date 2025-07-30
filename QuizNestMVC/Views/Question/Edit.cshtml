@@ -1,0 +1,203 @@
+﻿@using DataDomain;
+
+@model DataDomain.QuestionVM
+
+@{
+    ViewData["Title"] = "Edit Question";
+
+    IEnumerable<string> answerOptions = ViewBag.AnswerOptions;
+    IEnumerable<string> answerOptionsTF = new List<string>()
+    {
+        "True",
+        "False"
+    };
+    IEnumerable<string> questionTypes = ViewBag.QuestionTypes;
+}
+
+<h1>@Model.QuizName - Edit Question</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow card-registration col-md-6" style="border-radius: 15px;">
+        <div class="card-body p-4 p-md-5">
+            <h4>Question @Model.QuestionNumber</h4>
+            <hr />
+            <div class="row">
+                    <form asp-action="Edit">
+                        <input asp-for="QuestionNumber" class="form-control" type="hidden" />
+
+                        <div class="form-group" hidden>
+                            <label asp-for="QuestionTypeID" class="control-label"></label>
+                            @Html.DropDownListFor(m => m.QuestionTypeID, new SelectList(questionTypes), "Choose Question Type", new { @class = "form-control", @id = "questionType" })
+                            <span asp-validation-for="QuestionTypeID" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Prompt" class="control-label"></label>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <input asp-for="Prompt" class="form-control" disabled />
+                            }
+                            else
+                            {
+                                <input asp-for="Prompt" class="form-control" />
+                            }
+                            <span asp-validation-for="Prompt" class="text-danger"></span>
+                        </div>
+
+                        <div id="multipleChoiceDiv">
+                            <div class="form-group mt-2">
+                                <label asp-for="Answer1" class="control-label"></label>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <input asp-for="Answer1" class="form-control" id="Answer1" disabled />
+                                }
+                                else
+                                {
+                                    <input asp-for="Answer1" class="form-control" id="Answer1" />
+                                }
+                                <span asp-validation-for="Answer1" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label asp-for="Answer2" class="control-label"></label>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <input asp-for="Answer2" class="form-control" id="Answer2" disabled />
+                                }
+                                else
+                                {
+                                    <input asp-for="Answer2" class="form-control" id="Answer2" />
+                                }
+                                <span asp-validation-for="Answer2" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label asp-for="Answer3" class="control-label"></label>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <input asp-for="Answer3" class="form-control" id="Answer3" disabled />
+                                }
+                                else
+                                {
+                                    <input asp-for="Answer3" class="form-control" id="Answer3" />
+                                }
+                                <span asp-validation-for="Answer3" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label asp-for="Answer4" class="control-label"></label>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <input asp-for="Answer4" class="form-control" id="Answer4" disabled />
+                                }
+                                else
+                                {
+                                    <input asp-for="Answer4" class="form-control" id="Answer4" />
+                                }
+                                <span asp-validation-for="Answer4" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label asp-for="CorrectAnswer" for="dynamicDropdown" class="control-label"></label>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <input asp-for="CorrectAnswer" class="form-control" disabled />
+                                }
+                                else
+                                {
+                                    <select asp-for="CorrectAnswer" id="dynamicDropdown" class="form-control"></select>
+                                }
+                                <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div id="trueFalseDiv">
+                            <div class="form-group mt-2">
+                                <label asp-for="CorrectAnswer" class="control-label"></label>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <input asp-for="CorrectAnswer" class="form-control" disabled />
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.CorrectAnswer, new SelectList(answerOptionsTF), "Choose Correct Answer", new { @class = "form-control" })
+                                }
+                                <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div id="shortAnswerDiv">
+                            <div class="form-group mt-2">
+                                <label for="shortAnswer" class="control-label">Correct Answer</label>
+                                @if(User.IsInRole("Admin"))
+                                {
+                                    <input class="form-control" type="text" id="shortAnswer" name="shortAnswer" value="@Model.CorrectAnswer" disabled/>
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="text" id="shortAnswer" name="shortAnswer" value="@Model.CorrectAnswer" />
+                                }
+                                <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-check mt-2">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Active" /> @Html.DisplayNameFor(model => model.Active)
+                            </label>
+                        </div>
+                        <div class="form-group text-center mt-3">
+
+                            @Html.ActionLink("Cancel", "ViewQuestion", new { id = Model.QuizID, questionNumber = Model.QuestionNumber, enableEdit = Model.EnableEdit }, new { @class = "btn btn-warn me-2" })
+                            <input type="submit" value="Save" class="btn btn-main" />
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- Dynamically Update the DropDownList -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            console.log("heyyyyyyyy");
+            var questionType = document.getElementById("questionType");
+
+            // Function to update display based on selected value
+            function updateDisplay() {
+                var selectedType = questionType.value;
+                document.getElementById("multipleChoiceDiv").style.display = (selectedType === "Multiple Choice") ? "block" : "none";
+                document.getElementById("trueFalseDiv").style.display = (selectedType === "True/False") ? "block" : "none";
+                document.getElementById("shortAnswerDiv").style.display = (selectedType === "Short Answer") ? "block" : "none";
+            }
+
+            // Run function on page load
+            updateDisplay();
+
+            // Run function whenever selection changes
+            questionType.addEventListener("change", updateDisplay);
+
+
+
+            // Function to populate the dropdown dynamically
+            function populateDropdown() {
+                var dropdown = $("#dynamicDropdown");
+                dropdown.empty(); // Clear existing options
+
+                // Fetch values from input fields
+                ["#Answer1", "#Answer2", "#Answer3", "#Answer4"].forEach(function (id) {
+                    var value = $(id).val();
+                    if (value) {
+                        dropdown.append(new Option(value, value));
+                    }
+                });
+            }
+
+            // Update dropdown whenever an input value changes
+            $("input").on("input", populateDropdown);
+
+            // Initial population of dropdown
+            populateDropdown();
+        });
+    </script>
+}

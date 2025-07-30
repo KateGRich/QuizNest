@@ -11,5 +11,10 @@ namespace DataAccessInterfaces
     {
         List<ChatVM> SelectChatsByOriginator(int userID);
         List<ChatVM> SelectChatsByRecipient(int userID);
+        List<ChatType> SelectAllChatTypes();
+        List<User> SelectAllAdmins();
+        int InsertNewChat(ChatVM chat);
+        List<MessageVM> SelectMessagesByChatID(int chatID);
+        int InsertNewMessage(Message message);
     }
 }

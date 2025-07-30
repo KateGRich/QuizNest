@@ -1,0 +1,94 @@
+﻿@using DataDomain;
+
+@model IEnumerable<DataDomain.QuizVM>
+
+@{
+    ViewData["Title"] = "All Quizzes";
+
+    IEnumerable<string> quizTopics = ViewBag.Topics;
+}
+
+<h1>All Quizzes</h1>
+<hr/>
+
+<div class="row">
+    @using(Html.BeginForm())
+    {
+        <div class="d-flex align-items-center">
+            <div class="me-2">
+                <label class="control-label" for="quizName">Quiz Name</label>
+                @Html.TextBox("SearchString", "", new { @class = "form-control", @id = "quizName", @placeholder = "Type Quiz Name Here" })
+            </div>
+
+            <div class="me-2">
+                <label class="control-label" for="quizTopics">Quiz Topic</label>
+                @Html.DropDownList("QuizTopic", new SelectList(quizTopics), "Search By Topic", new { @class = "form-control", @id = "quizTopics" })
+            </div>
+
+            <div class="d-flex mt-4">
+                <input type="submit" value="Search" class="btn btn-second me-2" />
+            </div>
+        </div>
+    }
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-md-3">
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuizTopicID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfQuestions)
+            </th>
+            <th class="col-md-3">
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th class="col-md-3">
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model) {
+            @if(item.NumberOfQuestions > 0) {
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.QuizTopicID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NumberOfQuestions)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td class="col-md-3 text-end">
+                        @if(User.IsInRole("Quiz Taker")) {
+                            @Html.ActionLink("Take Quiz", "TakeQuiz", "Question", new { id = item.QuizID, questionNumber = (item.NumberOfQuestions == 0 ? 0 : 1), attemptType = "First" }, new { @class = "btn btn-sm btn-main me-2" })
+                        }
+                        @Html.ActionLink("Leaderboard", "ViewLeaderboard", new { id = item.QuizID }, new { @class = "btn btn-sm btn-second me-2" })
+                        @if(User.IsInRole("Admin")) {
+                            <div class="mt-2">
+                                @Html.ActionLink("Edit", "Edit", new { id = item.QuizID }, new { @class = "btn btn-sm btn-warn me-2" })
+                                @Html.ActionLink("View/Edit Questions", "ViewQuestion", "Question", new { id = item.QuizID, questionNumber = (item.NumberOfQuestions == 0 ? 0 : 1), enableEdit = true }, new { @class = "btn btn-sm btn-third me-2" })
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<div>
+    @if(User.IsInRole("Quiz Taker"))
+    {
+        @Html.ActionLink("Surprise Quiz!", "SurpriseMe", "Quiz", null, new { @class = "btn btn-main" })
+    }
+</div>

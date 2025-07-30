@@ -25,9 +25,9 @@ namespace LogicLayer
             _questionAccessor = new QuestionAccessor();
         }
 
-        public List<Question> GetAllQuestionsByQuizID(int quizID)
+        public List<QuestionVM> GetAllQuestionsByQuizID(int quizID)
         {
-            List<Question> questions = null;
+            List<QuestionVM> questions = null;
 
             try
             {
@@ -41,8 +41,7 @@ namespace LogicLayer
             return questions;
         }
 
-        public bool AddNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
-                    string answer2, string answer3, string answer4, string correctAnswer)
+        public bool AddNewQuizQuestion(Question question)
         {
             bool added = false;
 
@@ -50,8 +49,7 @@ namespace LogicLayer
 
             try
             {
-                rowsAffected = _questionAccessor.InsertNewQuizQuestion(questionTypeID, quizID, prompt,
-                                    answer1, answer2, answer3, answer4, correctAnswer);
+                rowsAffected = _questionAccessor.InsertNewQuizQuestion(question);
                 if(rowsAffected == 1)
                 {
                     added = true;
@@ -65,9 +63,7 @@ namespace LogicLayer
             return added;
         }
 
-        public bool EditQuestionInformation(int questionID, string newQuestionTypeID, int quizID, string newPrompt,
-                        string newAnswer1, string newAnswer2, string newAnswer3, string newAnswer4,
-                        string newCorrectAnswer, bool newActive)
+        public bool EditQuestionInformation(Question question)
         {
             bool updated = false;
 
@@ -75,8 +71,7 @@ namespace LogicLayer
 
             try
             {
-                rowsAffected = _questionAccessor.UpdateQuestionInformation(questionID, newQuestionTypeID, quizID, newPrompt, newAnswer1,
-                                        newAnswer2, newAnswer3, newAnswer4, newCorrectAnswer, newActive);
+                rowsAffected = _questionAccessor.UpdateQuestionInformation(question);
                 if(rowsAffected == 1)
                 {
                     updated = true;
@@ -90,13 +85,29 @@ namespace LogicLayer
             return updated;
         }
 
-        public List<Question> GetActiveQuestionsByQuizID(int quizID)
+        public List<QuestionVM> GetActiveQuestionsByQuizID(int quizID)
         {
-            List<Question> questions = null;
+            List<QuestionVM> questions = null;
 
             try
             {
                 questions = _questionAccessor.SelectActiveQuestionsByQuizID(quizID);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No questions found...", ex);
+            }
+
+            return questions;
+        }
+
+        public QuestionVM GetQuestionByID(int questionID)
+        {
+            QuestionVM questions = null;
+
+            try
+            {
+                questions = _questionAccessor.SelectQuestionByID(questionID);
             }
             catch(Exception ex)
             {

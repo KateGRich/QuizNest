@@ -142,7 +142,7 @@ namespace DataAccessLayer
             return users;
         }
 
-        public int InsertNewUser(string givenName, string familyName, string email, string phoneNumber)
+        public int InsertNewUser(User user)
         {
             int result = 0;
 
@@ -153,10 +153,10 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@FamilyName", SqlDbType.NVarChar, 50);
             cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 250);
             cmd.Parameters.Add("@PhoneNumber", SqlDbType.NVarChar, 15);
-            cmd.Parameters["@GivenName"].Value = givenName;
-            cmd.Parameters["@FamilyName"].Value = familyName;
-            cmd.Parameters["@Email"].Value = email;
-            cmd.Parameters["@PhoneNumber"].Value = phoneNumber;
+            cmd.Parameters["@GivenName"].Value = user.GivenName;
+            cmd.Parameters["@FamilyName"].Value = user.FamilyName;
+            cmd.Parameters["@Email"].Value = user.Email;
+            cmd.Parameters["@PhoneNumber"].Value = user.PhoneNumber;
             try
             {
                 conn.Open();
@@ -174,7 +174,7 @@ namespace DataAccessLayer
             return result;
         }
 
-        public int InserNewUserRole(int userID, string roleID)
+        public int InserNewUserRole(UserRole userRole)
         {
             int rowsAffected = 0;
 
@@ -183,8 +183,8 @@ namespace DataAccessLayer
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@UserID", SqlDbType.Int);
             cmd.Parameters.Add("@RoleID", SqlDbType.NVarChar, 50);
-            cmd.Parameters["@UserID"].Value = userID;
-            cmd.Parameters["@RoleID"].Value = roleID;
+            cmd.Parameters["@UserID"].Value = userRole.UserID;
+            cmd.Parameters["@RoleID"].Value = userRole.RoleID;
             try
             {
                 conn.Open();
@@ -202,8 +202,7 @@ namespace DataAccessLayer
             return rowsAffected;
         }
 
-        public int UpdateUserInformation(int userID, string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
-                            bool newActive, DateTime? newReactivationDate)
+        public int UpdateUserInformation(User user, User updatedUser)
         {
             // Not checking old values because the sp would not work with adding them.
             // Too many checks in the WHERE clause or something, but this is the only way I could get it to work.
@@ -221,13 +220,13 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@newActive", SqlDbType.Bit);
             cmd.Parameters.Add("@newReactivationDate", SqlDbType.DateTime);
 
-            cmd.Parameters["@UserID"].Value = userID;
-            cmd.Parameters["@newGivenName"].Value = newGivenName;
-            cmd.Parameters["@newFamilyName"].Value = newFamilyName;
-            cmd.Parameters["@newEmail"].Value = newEmail;
-            cmd.Parameters["@newPhoneNumber"].Value = (object)newPhoneNumber ?? DBNull.Value;
-            cmd.Parameters["@newActive"].Value = newActive;
-            cmd.Parameters["@newReactivationDate"].Value = (object)newReactivationDate ?? DBNull.Value;
+            cmd.Parameters["@UserID"].Value = user.UserID;
+            cmd.Parameters["@newGivenName"].Value = updatedUser.GivenName;
+            cmd.Parameters["@newFamilyName"].Value = updatedUser.FamilyName;
+            cmd.Parameters["@newEmail"].Value = updatedUser.Email;
+            cmd.Parameters["@newPhoneNumber"].Value = (object)updatedUser.PhoneNumber ?? DBNull.Value;
+            cmd.Parameters["@newActive"].Value = updatedUser.Active;
+            cmd.Parameters["@newReactivationDate"].Value = (object)updatedUser.ReactivationDate ?? DBNull.Value;
 
             try
             {
@@ -246,7 +245,7 @@ namespace DataAccessLayer
             return result;
         }
 
-        public int DeleteUserRole(int userID, string roleID)
+        public int DeleteUserRole(UserRole userRole)
         {
             int rowsAffected = 0;
 
@@ -255,8 +254,8 @@ namespace DataAccessLayer
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@UserID", SqlDbType.Int);
             cmd.Parameters.Add("@RoleID", SqlDbType.NVarChar, 50);
-            cmd.Parameters["@UserID"].Value = userID;
-            cmd.Parameters["@RoleID"].Value = roleID;
+            cmd.Parameters["@UserID"].Value = userRole.UserID;
+            cmd.Parameters["@RoleID"].Value = userRole.RoleID;
             try
             {
                 conn.Open();

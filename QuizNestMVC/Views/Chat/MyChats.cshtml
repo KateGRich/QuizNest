@@ -1,0 +1,71 @@
+﻿@model IEnumerable<DataDomain.ChatVM>
+
+@{
+    ViewData["Title"] = "My Chats";
+}
+
+<h1>My Chats</h1>
+<hr/>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ChatTypeID)
+            </th>
+            @if(User.IsInRole("Admin")) {
+                <th>
+                    @Html.DisplayNameFor(model => model.OriginatorName)
+                </th>
+            }
+            else {
+                <th>
+                    @Html.DisplayNameFor(model => model.RecipientName)
+                </th>
+            }
+            <th>
+                @Html.DisplayNameFor(model => model.FormattedCreatedOn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FormattedLastMessageDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach(var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChatTypeID)
+            </td>
+            @if(User.IsInRole("Admin")) {
+                <td>
+                    @Html.DisplayFor(modelItem => item.OriginatorName)
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.RecipientName)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.FormattedCreatedOn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormattedLastMessageDate)
+            </td>
+            <td class="text-center">
+                @Html.ActionLink("View", "ViewChat", new { id = item.ChatID, recipient = item.RecipientName, chatTopic = item.ChatTypeID }, new { @class = "btn btn-second" })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div>
+    @if(!User.IsInRole("Admin"))
+    {
+        <a asp-action="NewChat" class="btn btn-main">Start New Chat with Admin</a>
+    }
+</div>

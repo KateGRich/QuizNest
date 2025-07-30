@@ -13,12 +13,18 @@ namespace DataAccessInterfaces
         UserVM SelectUserByEmail(string email);
         List<string> SelectRolesByUserID(int userID);
         List<UserVM> SelectAllUsers();
-        int InsertNewUser(string givenName, string familyName, string email, string phoneNumber);
-        int InserNewUserRole(int userID, string roleID);
-        int UpdateUserInformation(int userID, string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
-                            bool newActive, DateTime? newReactivationDate); // I could only get this to work without checking the old values.
-                                                                            // More comments in the UserAccessor implementation.
-        int DeleteUserRole(int userID, string roleID);
+
+        int InsertNewUser(User user);
+        //int InsertNewUser(string givenName, string familyName, string email, string phoneNumber);
+        int InserNewUserRole(UserRole userRole);
+        //int InserNewUserRole(int userID, string roleID);
+        int UpdateUserInformation(User user, User updatedUser);
+        //int UpdateUserInformation(int userID, string newGivenName, string newFamilyName, string newEmail, string? newPhoneNumber,
+        //                    bool newActive, DateTime? newReactivationDate); // I could only get this to work without checking the old values.
+        //                                                                    // More comments in the UserAccessor implementation.
+        int DeleteUserRole(UserRole userRole);
+        //int DeleteUserRole(int userID, string roleID);
+
         UserVM SelectUserByUserID(int userID);
         int UpdateUserPasswordHash(string email, string currentPasswordHash, string newPasswordHash);
     }

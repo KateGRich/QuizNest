@@ -35,7 +35,7 @@ namespace QuizNestPresentation
         List<string> _questionTypes = new List<string>();
 
         int _count = 0;
-        List<Question> _questions = new List<Question>();
+        List<QuestionVM> _questions = new List<QuestionVM>();
         List<Question> _newQuestions = new List<Question>(); // Used for editing - adding new questions to the existing quiz.
 
         List<string> _multiChoiceAnswers = new List<string> { "", "", "", "" };
@@ -950,16 +950,16 @@ namespace QuizNestPresentation
                 }
             }
         }
-        private Question saveQuestion()
+        private QuestionVM saveQuestion()
         {
-            Question q;
+            QuestionVM q;
 
             if(_editQuiz == null)
             {
                 // No QuizID.
 
                 // Assign the entered values to a Question object, which will get saved to the list.
-                q = new Question
+                q = new QuestionVM
                 {
                     QuestionTypeID = cboQuestionType.Text,
                     Prompt = txtPrompt.Text,
@@ -976,7 +976,7 @@ namespace QuizNestPresentation
                 if(_count + 1 > _questions.Count)
                 {
                     // New Question being added to the Quiz.
-                    q = new Question
+                    q = new QuestionVM
                     {
                         QuestionTypeID = cboQuestionType.Text,
                         QuizID = _editQuiz.QuizID,
@@ -992,7 +992,7 @@ namespace QuizNestPresentation
                 else
                 {
                     // Assign the entered values to a Question object, which will get saved to the list.
-                    q = new Question
+                    q = new QuestionVM
                     {
                         QuestionID = _questions[_count].QuestionID,
                         QuestionTypeID = cboQuestionType.Text,
@@ -1025,9 +1025,15 @@ namespace QuizNestPresentation
         }
         private void addNewQuizTopic()
         {
+            QuizTopic newQuizTopic = new QuizTopic()
+            {
+                QuizTopicID = _quizTopic.QuizTopicID,
+                Description = _quizTopic.Description
+            };
+
             try
             {
-                bool topicResult = _quizManager.AddNewQuizTopic(_quizTopic.QuizTopicID, _quizTopic.Description);
+                bool topicResult = _quizManager.AddNewQuizTopic(newQuizTopic);
                 if(topicResult == false)
                 {
                     throw new Exception("Quiz Topic Not Added...");
@@ -1046,9 +1052,17 @@ namespace QuizNestPresentation
         private int addNewQuiz()
         {
             int newQuizID = 0;
+            Quiz newQuiz = new Quiz()
+            {
+                QuizTopicID = _quiz.QuizTopicID,
+                Name = _quiz.Name,
+                CreatedBy = _quiz.CreatedBy,
+                Description = _quiz.Description
+            };
+
             try
             {
-                newQuizID = _quizManager.AddNewQuiz(_quiz.QuizTopicID, _quiz.Name, _quiz.CreatedBy, _quiz.Description);
+                newQuizID = _quizManager.AddNewQuiz(newQuiz);
                 if(newQuizID == 0)
                 {
                     throw new Exception("Quiz Not Added...");
@@ -1076,9 +1090,9 @@ namespace QuizNestPresentation
                     // Creating new Quiz.
                     for(int i = 0; i < _questions.Count; i++)
                     {
-                        bool questionResult = _questionManager.AddNewQuizQuestion(_questions[i].QuestionTypeID, newQuizID,
-                                                    _questions[i].Prompt, _questions[i].Answer1, _questions[i].Answer2,
-                                                    _questions[i].Answer3, _questions[i].Answer4, _questions[i].CorrectAnswer);
+                        _questions[i].QuizID = newQuizID;
+
+                        bool questionResult = _questionManager.AddNewQuizQuestion(_questions[i]);
                         if(questionResult == false)
                         {
                             throw new Exception("Quiz Question Not Added...");
@@ -1095,9 +1109,9 @@ namespace QuizNestPresentation
                     // Editing existing Quiz - just adding new questions to it.
                     for(int i = 0; i < _newQuestions.Count; i++)
                     {
-                        bool questionResult = _questionManager.AddNewQuizQuestion(_newQuestions[i].QuestionTypeID, newQuizID,
-                                                    _newQuestions[i].Prompt, _newQuestions[i].Answer1, _newQuestions[i].Answer2,
-                                                    _newQuestions[i].Answer3, _newQuestions[i].Answer4, _newQuestions[i].CorrectAnswer);
+                        _questions[i].QuizID = newQuizID;
+
+                        bool questionResult = _questionManager.AddNewQuizQuestion(_newQuestions[i]);
                         if(questionResult == false)
                         {
                             throw new Exception("Quiz Question Not Added...");
@@ -1114,15 +1128,16 @@ namespace QuizNestPresentation
             }
         }
 
-        private void saveQuizQuestions(List<Question> questions, int quizID)
+        private void saveQuizQuestions(List<QuestionVM> questions, int quizID)
         {
             try
             {
                 for(int i = 0; i < _questions.Count - _newQuestions.Count; i++)
                 {
-                    bool questionResult = _questionManager.EditQuestionInformation(questions[i].QuestionID, questions[i].QuestionTypeID, quizID,
-                                                questions[i].Prompt, questions[i].Answer1, questions[i].Answer2, questions[i].Answer3,
-                                                questions[i].Answer4, questions[i].CorrectAnswer, questions[i].Active);
+                    questions[i].QuizID = quizID;
+                    questions[i].QuestionID = _questions[i].QuestionID;
+
+                    bool questionResult = _questionManager.EditQuestionInformation(questions[i]);
                     if(questionResult == false)
                     {
                         throw new Exception("Quiz Question Not Updated...");

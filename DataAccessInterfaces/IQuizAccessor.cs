@@ -14,9 +14,10 @@ namespace DataAccessInterfaces
         List<QuizVM> SelectAllActiveQuizzes();
         List<QuizTopic> SelectAllQuizTopics();
         List<string> SelectAllQuestionTypes();
-        int InsertNewQuizTopic(string quizTopic, string description);
-        int InsertNewQuiz(string quizTopicID, string name, int userID, string description); // Returns new QuizID.
-        int UpdateQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive);
+        int InsertNewQuizTopic(QuizTopic quizTopic);
+        int InsertNewQuiz(Quiz quiz); // Returns new QuizID.
+        int UpdateQuizInformation(Quiz quiz, Quiz newQuiz);
         QuizVM SelectQuizByID(int quizID);
+        int SelectCountOfActiveQuestionsByQuiz(int quizID);
     }
 }

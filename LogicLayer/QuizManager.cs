@@ -57,7 +57,7 @@ namespace LogicLayer
 
                 foreach(QuizVM quiz in quizzes)
                 {
-                    quiz.NumberOfQuestions = _quizAccessor.SelectTotalCountOfQuestionsByQuiz(quiz.QuizID);
+                    quiz.NumberOfQuestions = _quizAccessor.SelectCountOfActiveQuestionsByQuiz(quiz.QuizID);
                 }
             }
             catch(Exception ex)
@@ -100,7 +100,7 @@ namespace LogicLayer
             return questionTypes;
         }
 
-        public bool AddNewQuizTopic(string quizTopic, string description)
+        public bool AddNewQuizTopic(QuizTopic quizTopic)
         {
             bool added = false;
 
@@ -108,7 +108,7 @@ namespace LogicLayer
 
             try
             {
-                rowsAffected = _quizAccessor.InsertNewQuizTopic(quizTopic, description);
+                rowsAffected = _quizAccessor.InsertNewQuizTopic(quizTopic);
                 if(rowsAffected == 1)
                 {
                     added = true;
@@ -122,13 +122,13 @@ namespace LogicLayer
             return added;
         }
 
-        public int AddNewQuiz(string quizTopicID, string name, int userID, string description)
+        public int AddNewQuiz(Quiz quiz)
         {
             int newQuizID = 0;
 
             try
             {
-                newQuizID = _quizAccessor.InsertNewQuiz(quizTopicID, name, userID, description);
+                newQuizID = _quizAccessor.InsertNewQuiz(quiz);
             }
             catch(Exception ex)
             {
@@ -138,7 +138,7 @@ namespace LogicLayer
             return newQuizID;
         }
 
-        public bool EditQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive)
+        public bool EditQuizInformation(Quiz quiz, Quiz newQuiz)
         {
             bool updated = false;
 
@@ -146,7 +146,7 @@ namespace LogicLayer
 
             try
             {
-                rowsAffected = _quizAccessor.UpdateQuizInformation(quizID, newQuizTopicID, newName, newDescription, newActive);
+                rowsAffected = _quizAccessor.UpdateQuizInformation(quiz, newQuiz);
                 if(rowsAffected == 1)
                 {
                     updated = true;

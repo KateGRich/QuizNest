@@ -1,0 +1,62 @@
+﻿@using DataDomain;
+
+@model DataDomain.QuizVM
+
+@{
+    ViewData["Title"] = "Create New Quiz";
+
+    IEnumerable<QuizTopic> quizTopics = ViewBag.QuizTopics;
+    IEnumerable<string> topics = ViewBag.Topics;
+    IEnumerable<string> descriptions = ViewBag.Descriptions;
+}
+
+<h1>Create New Quiz</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="QuizTopicID" class="control-label"></label>
+                <input asp-for="QuizTopicID" id="quizTopicID" list="topics" class="form-control" />
+                <datalist id="topics">
+                    @foreach(var topic in topics)
+                    {
+                        <option value="@topic" />
+                    }
+                </datalist>
+                <span asp-validation-for="QuizTopicID" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="QuizTopicDescription" class="control-label"></label>
+                <textarea asp-for="QuizTopicDescription" id="quizTopicDescription" type="text" list="descriptions" class="form-control"></textarea>
+                <datalist id="descriptions">
+                    @foreach(var description in descriptions)
+                    {
+                        <option value="@description" />
+                    }
+                </datalist>
+                <span asp-validation-for="QuizTopicDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3 text-center">
+                <a asp-action="MyQuizzes" class="btn btn-warn me-2">Cancel</a>
+                <input type="submit" value="Submit" class="btn btn-main" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

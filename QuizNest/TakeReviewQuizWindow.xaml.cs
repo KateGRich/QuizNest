@@ -33,7 +33,7 @@ namespace QuizNestPresentation
 
         int _count = 0;
 
-        List<Question> _questions = new List<Question>();
+        List<QuestionVM> _questions = new List<QuestionVM>();
         List<string> _answers = new List<string>();
 
         List<Question> _missedQuestions = new List<Question>();
@@ -829,9 +829,17 @@ namespace QuizNestPresentation
         private int addQuizRecord(decimal score)
         {
             int newRecordID = 0;
+            QuizRecord newQuizRecord = new QuizRecord()
+            {
+                AttemptTypeID = _attemptType,
+                UserID = _user.UserID,
+                QuizID = _quiz.QuizID,
+                Score = score,
+                IsPublic = true
+            };
             try
             {
-                newRecordID = _quizRecordManager.AddQuizRecord(_attemptType, _user.UserID, _quiz.QuizID, score);
+                newRecordID = _quizRecordManager.AddQuizRecord(newQuizRecord);
                 if(newRecordID == 0)
                 {
                     throw new Exception("Record Not Added...");

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessInterfaces", "Dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessFakes", "DataAccessFakes\DataAccessFakes.csproj", "{81F274F3-CEF6-4DB8-9AF3-74F13E626F61}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuizNestMVC", "QuizNestMVC\QuizNestMVC.csproj", "{F3CBACBA-11E2-4581-9EAE-489EF0D2D879}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{81F274F3-CEF6-4DB8-9AF3-74F13E626F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81F274F3-CEF6-4DB8-9AF3-74F13E626F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81F274F3-CEF6-4DB8-9AF3-74F13E626F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3CBACBA-11E2-4581-9EAE-489EF0D2D879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3CBACBA-11E2-4581-9EAE-489EF0D2D879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3CBACBA-11E2-4581-9EAE-489EF0D2D879}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3CBACBA-11E2-4581-9EAE-489EF0D2D879}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

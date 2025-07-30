@@ -61,13 +61,13 @@ namespace LogicLayer
             return takenQuizzes;
         }
 
-        public int AddQuizRecord(string attemptType, int userID, int quizID, decimal score)
+        public int AddQuizRecord(QuizRecord quizRecord)
         {
             int newRecordID = 0;
 
             try
             {
-                newRecordID = _quizRecordAccessor.InsertQuizRecord(attemptType, userID, quizID, score);
+                newRecordID = _quizRecordAccessor.InsertQuizRecord(quizRecord);
             }
             catch(Exception ex)
             {
@@ -119,6 +119,38 @@ namespace LogicLayer
             }
 
             return updated;
+        }
+
+        public List<MissedQuestion> GetActiveMissedQuestionsByQuizRecordID(int quizRecordID)
+        {
+            List<MissedQuestion> missedQuestions = null;
+
+            try
+            {
+                missedQuestions = _quizRecordAccessor.SelectActiveMissedQuestionsByQuizRecordID(quizRecordID);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No questions found...", ex);
+            }
+
+            return missedQuestions;
+        }
+
+        public QuizRecordVM GetQuizRecordByID(int quizRecordID)
+        {
+            QuizRecordVM quizRecord = null;
+
+            try
+            {
+                quizRecord = _quizRecordAccessor.SelectQuizRecordByID(quizRecordID);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Quiz Record Not Found...", ex);
+            }
+
+            return quizRecord;
         }
     }
 }

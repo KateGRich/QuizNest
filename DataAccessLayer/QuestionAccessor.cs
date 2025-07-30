@@ -12,9 +12,9 @@ namespace DataAccessLayer
 {
     public class QuestionAccessor : IQuestionAccessor
     {
-        public List<Question> SelectAllQuestionsByQuizID(int quizID)
+        public List<QuestionVM> SelectAllQuestionsByQuizID(int quizID)
         {
-            List<Question> questions = new List<Question>();
+            List<QuestionVM> questions = new List<QuestionVM>();
 
             var conn = DBConnection.GetConnection();
             var cmd = new SqlCommand("sp_select_all_questions_by_quizID", conn);
@@ -28,7 +28,7 @@ namespace DataAccessLayer
                 var reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    questions.Add(new Question()
+                    questions.Add(new QuestionVM()
                     {
                         QuestionID = reader.GetInt32(0),
                         QuestionTypeID = reader.GetString(1),
@@ -40,7 +40,8 @@ namespace DataAccessLayer
                         Answer4 = reader.IsDBNull(7) ? null : reader.GetString(7),
                         CorrectAnswer = reader.GetString(8),
                         CreatedOn = reader.GetDateTime(9),
-                        Active = reader.GetBoolean(10)
+                        Active = reader.GetBoolean(10),
+                        QuizName = reader.GetString(11)
                     });
                 }
             }
@@ -55,8 +56,7 @@ namespace DataAccessLayer
             return questions;
         }
 
-        public int InsertNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
-                string answer2, string answer3, string answer4, string correctAnswer)
+        public int InsertNewQuizQuestion(Question question)
         {
             int result = 0;
 
@@ -73,14 +73,14 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@Answer4", SqlDbType.NVarChar, 250);
             cmd.Parameters.Add("@CorrectAnswer", SqlDbType.NVarChar, 250);
 
-            cmd.Parameters["@QuestionTypeID"].Value = questionTypeID;
-            cmd.Parameters["@QuizID"].Value = quizID;
-            cmd.Parameters["@Prompt"].Value = prompt;
-            cmd.Parameters["@Answer1"].Value = answer1;
-            cmd.Parameters["@Answer2"].Value = answer2;
-            cmd.Parameters["@Answer3"].Value = answer3;
-            cmd.Parameters["@Answer4"].Value = answer4;
-            cmd.Parameters["@CorrectAnswer"].Value = correctAnswer;
+            cmd.Parameters["@QuestionTypeID"].Value = question.QuestionTypeID;
+            cmd.Parameters["@QuizID"].Value = question.QuizID;
+            cmd.Parameters["@Prompt"].Value = question.Prompt;
+            cmd.Parameters["@Answer1"].Value = question.Answer1 == null ? DBNull.Value : question.Answer1;
+            cmd.Parameters["@Answer2"].Value = question.Answer2 == null ? DBNull.Value : question.Answer2;
+            cmd.Parameters["@Answer3"].Value = question.Answer3 == null ? DBNull.Value : question.Answer3;
+            cmd.Parameters["@Answer4"].Value = question.Answer4 == null ? DBNull.Value : question.Answer4;
+            cmd.Parameters["@CorrectAnswer"].Value = question.CorrectAnswer;
 
             try
             {
@@ -99,9 +99,7 @@ namespace DataAccessLayer
             return result;
         }
 
-        public int UpdateQuestionInformation(int questionID, string newQuestionTypeID, int quizID, string newPrompt,
-                        string newAnswer1, string newAnswer2, string newAnswer3, string newAnswer4,
-                        string newCorrectAnswer, bool newActive)
+        public int UpdateQuestionInformation(Question question)
         {
             int result = 0;
 
@@ -120,16 +118,16 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@newCorrectAnswer", SqlDbType.NVarChar, 250);
             cmd.Parameters.Add("@newActive", SqlDbType.Bit);
 
-            cmd.Parameters["@QuestionID"].Value = questionID;
-            cmd.Parameters["@newQuestionTypeID"].Value = newQuestionTypeID;
-            cmd.Parameters["@QuizID"].Value = quizID;
-            cmd.Parameters["@newPrompt"].Value = newPrompt;
-            cmd.Parameters["@newAnswer1"].Value = (object)newAnswer1 ?? DBNull.Value;
-            cmd.Parameters["@newAnswer2"].Value = (object)newAnswer2 ?? DBNull.Value;
-            cmd.Parameters["@newAnswer3"].Value = (object)newAnswer3 ?? DBNull.Value;
-            cmd.Parameters["@newAnswer4"].Value = (object)newAnswer4 ?? DBNull.Value;
-            cmd.Parameters["@newCorrectAnswer"].Value = newCorrectAnswer;
-            cmd.Parameters["@newActive"].Value = newActive;
+            cmd.Parameters["@QuestionID"].Value = question.QuestionID;
+            cmd.Parameters["@newQuestionTypeID"].Value = question.QuestionTypeID;
+            cmd.Parameters["@QuizID"].Value = question.QuizID;
+            cmd.Parameters["@newPrompt"].Value = question.Prompt;
+            cmd.Parameters["@newAnswer1"].Value = (object)question.Answer1 ?? DBNull.Value;
+            cmd.Parameters["@newAnswer2"].Value = (object)question.Answer2 ?? DBNull.Value;
+            cmd.Parameters["@newAnswer3"].Value = (object)question.Answer3 ?? DBNull.Value;
+            cmd.Parameters["@newAnswer4"].Value = (object)question.Answer4 ?? DBNull.Value;
+            cmd.Parameters["@newCorrectAnswer"].Value = question.CorrectAnswer;
+            cmd.Parameters["@newActive"].Value = question.Active;
 
             try
             {
@@ -148,12 +146,12 @@ namespace DataAccessLayer
             return result;
         }
 
-        public List<Question> SelectActiveQuestionsByQuizID(int quizID)
+        public List<QuestionVM> SelectActiveQuestionsByQuizID(int quizID)
         {
-            List<Question> questions = new List<Question>();
+            List<QuestionVM> questions = new List<QuestionVM>();
 
             var conn = DBConnection.GetConnection();
-            var cmd = new SqlCommand("sp_select_all_questions_by_quizID", conn);
+            var cmd = new SqlCommand("sp_select_active_questions_by_quizID", conn);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("@QuizID", SqlDbType.Int);
@@ -164,7 +162,7 @@ namespace DataAccessLayer
                 var reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
-                    questions.Add(new Question()
+                    questions.Add(new QuestionVM()
                     {
                         QuestionID = reader.GetInt32(0),
                         QuestionTypeID = reader.GetString(1),
@@ -176,7 +174,8 @@ namespace DataAccessLayer
                         Answer4 = reader.IsDBNull(7) ? null : reader.GetString(7),
                         CorrectAnswer = reader.GetString(8),
                         CreatedOn = reader.GetDateTime(9),
-                        Active = reader.GetBoolean(10)
+                        Active = reader.GetBoolean(10),
+                        QuizName = reader.GetString(11)
                     });
                 }
             }
@@ -189,6 +188,51 @@ namespace DataAccessLayer
                 conn.Close();
             }
             return questions;
+        }
+
+        public QuestionVM SelectQuestionByID(int questionID)
+        {
+            QuestionVM question = new QuestionVM();
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_question_by_questionID", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuestionID", SqlDbType.Int);
+            cmd.Parameters["@QuestionID"].Value = questionID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                if(reader.HasRows)
+                {
+                    reader.Read();
+                    question = new QuestionVM()
+                    {
+                        QuestionID = reader.GetInt32(0),
+                        QuestionTypeID = reader.GetString(1),
+                        QuizID = reader.GetInt32(2),
+                        Prompt = reader.GetString(3),
+                        Answer1 = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        Answer2 = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        Answer3 = reader.IsDBNull(6) ? null : reader.GetString(6),
+                        Answer4 = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        CorrectAnswer = reader.GetString(8),
+                        CreatedOn = reader.GetDateTime(9),
+                        Active = reader.GetBoolean(10),
+                        QuizName = reader.GetString(11)
+                    };
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return question;
         }
     }
 }

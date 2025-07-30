@@ -1,0 +1,48 @@
+﻿@model ErrorViewModel
+
+@{
+    ViewData["Title"] = "Error";
+
+    var errorMessage = ViewBag.ErrorMessage;
+}
+
+@if(User.IsInRole("Admin"))
+{
+
+    <h1 class="text-danger">Error</h1>
+    <h2 class="text-danger text-center">An error occurred while processing your request.</h2>
+
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12 text-center">
+
+                <h3 style="margin-top: 2%;">
+                    @if (Model.ShowRequestId)
+                    {
+                        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                    }
+                </h3>
+                <h4 class="mb-4 mt-3">
+                    Error: @errorMessage
+                </h4>
+                @Html.ActionLink("Home Page", "Index", "Home", null, new { @class = "btn btn-main mt-3" })
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 style="margin-top: 2%;">
+                    Oopsies!
+                </h2>
+                <p class="mb-4">
+                    Either something went wrong or this page no longer exists.
+                </p>
+                @Html.ActionLink("Home Page", "Index", "Home", null, new { @class = "btn btn-main mt-3" })
+            </div>
+        </div>
+    </div>
+}

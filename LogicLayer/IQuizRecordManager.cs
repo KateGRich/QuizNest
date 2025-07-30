@@ -11,8 +11,10 @@ namespace LogicLayer
     {
         List<QuizRecordVM> GetQuizLeaderboard(int quizID);
         List<QuizRecordVM> GetTakenQuizzes(int userID);
-        int AddQuizRecord(string attemptType, int userID, int quizID, decimal score);
+        int AddQuizRecord(QuizRecord quizRecord);
         bool AddMissedQuestion(int quizRecordID, int questionID);
         bool EditQuizRecordIsPublicStatus(int quizRecordID, bool isPublic);
+        List<MissedQuestion> GetActiveMissedQuestionsByQuizRecordID(int quizRecordID);
+        QuizRecordVM GetQuizRecordByID(int quizRecordID);
     }
 }

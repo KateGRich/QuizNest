@@ -93,7 +93,7 @@ namespace DataAccessLayer
             return takenQuizzes;
         }
 
-        public int InsertQuizRecord(string attemptType, int userID, int quizID, decimal score)
+        public int InsertQuizRecord(QuizRecord quizRecord)
         {
             int newRecordID = 0;
 
@@ -106,10 +106,10 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@QuizID", SqlDbType.Int);
             cmd.Parameters.Add("@Score", SqlDbType.Decimal);
 
-            cmd.Parameters["@AttemptTypeID"].Value = attemptType;
-            cmd.Parameters["@UserID"].Value = userID;
-            cmd.Parameters["@QuizID"].Value = quizID;
-            cmd.Parameters["@Score"].Value = score;
+            cmd.Parameters["@AttemptTypeID"].Value = quizRecord.AttemptTypeID;
+            cmd.Parameters["@UserID"].Value = quizRecord.UserID;
+            cmd.Parameters["@QuizID"].Value = quizRecord.QuizID;
+            cmd.Parameters["@Score"].Value = quizRecord.Score;
             try
             {
                 conn.Open();
@@ -188,6 +188,92 @@ namespace DataAccessLayer
             }
 
             return result;
+        }
+
+        public QuizRecordVM SelectQuizRecordByID(int quizRecordID)
+        {
+            QuizRecordVM quizRecord = null;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_quizRecord_by_quizRecordID", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizRecordID", SqlDbType.Int);
+            cmd.Parameters["@QuizRecordID"].Value = quizRecordID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                if(reader.HasRows)
+                {
+                    reader.Read();
+                    quizRecord = new QuizRecordVM()
+                    {
+                        QuizRecordID = reader.GetInt32(0),
+                        QuizID = reader.GetInt32(1),
+                        QuizTopicID = reader.GetString(2),
+                        QuizName = reader.GetString(3),
+                        Score = reader.GetDecimal(4),
+                        AttemptTypeID = reader.GetString(5),
+                        DateTaken = reader.GetDateTime(6),
+                        IsPublic = reader.GetBoolean(7)
+                    };
+                }
+                else
+                {
+                    throw new ArgumentException("Quiz Record Not Found...");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No Record Found...", ex);
+            }
+
+            return quizRecord;
+        }
+
+        public List<MissedQuestion> SelectActiveMissedQuestionsByQuizRecordID(int quizRecordID)
+        {
+            List<MissedQuestion> missedQuestions = new List<MissedQuestion>();
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_active_missed_questions_by_quizRecordID", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@QuizRecordID", SqlDbType.Int);
+            cmd.Parameters["@QuizRecordID"].Value = quizRecordID;
+            try
+            {
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    missedQuestions.Add(new MissedQuestion()
+                    {
+                        QuestionID = reader.GetInt32(0),
+                        QuestionTypeID = reader.GetString(1),
+                        QuizID = reader.GetInt32(2),
+                        Prompt = reader.GetString(3),
+                        Answer1 = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        Answer2 = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        Answer3 = reader.IsDBNull(6) ? null : reader.GetString(6),
+                        Answer4 = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        CorrectAnswer = reader.GetString(8),
+                        QuizName = reader.GetString(9),
+                        AttemptTypeID = reader.GetString(10),
+                        QuizRecordID = reader.GetInt32(11)
+                    });
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return missedQuestions;
         }
     }
 }

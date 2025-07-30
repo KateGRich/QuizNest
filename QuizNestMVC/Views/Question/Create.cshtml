@@ -1,0 +1,130 @@
+﻿@using DataDomain;
+
+@model DataDomain.QuestionVM
+
+@{
+    ViewData["Title"] = "Create";
+
+    IEnumerable<string> questionTypes = ViewBag.QuestionTypes;
+    IEnumerable<string> answerOptionsTF = new List<string>()
+    {
+        "True",
+        "False"
+    };
+    string quizName = ViewBag.QuizName;
+}
+
+<h1>@quizName - Add New Question</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input asp-for="QuizID" class="form-control" type="hidden" />
+            <input asp-for="Active" class="form-control" type="hidden" value="true"/>
+
+            <div class="form-group">
+                <label asp-for="QuestionTypeID" class="control-label"></label>
+                @Html.DropDownListFor(m => m.QuestionTypeID, new SelectList(questionTypes), "Choose Question Type", new { @class = "form-control", @id = "questionType" })
+                <span asp-validation-for="QuestionTypeID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-2">
+                <label asp-for="Prompt" class="control-label"></label>
+                <input asp-for="Prompt" class="form-control" />
+                <span asp-validation-for="Prompt" class="text-danger"></span>
+            </div>
+
+            <div id="multipleChoiceDiv" style="display:none;">
+                <div class="form-group mt-2">
+                    <label asp-for="Answer1" class="control-label"></label>
+                    <input asp-for="Answer1" class="form-control" id="Answer1" />
+                    <span asp-validation-for="Answer1" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="Answer2" class="control-label"></label>
+                    <input asp-for="Answer2" class="form-control" id="Answer2" />
+                    <span asp-validation-for="Answer2" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="Answer3" class="control-label"></label>
+                    <input asp-for="Answer3" class="form-control" id="Answer3" />
+                    <span asp-validation-for="Answer3" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="Answer4" class="control-label"></label>
+                    <input asp-for="Answer4" class="form-control" id="Answer4" />
+                    <span asp-validation-for="Answer4" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="CorrectAnswer" for="dynamicDropdown" class="control-label"></label>
+                    <select asp-for="CorrectAnswer" id="dynamicDropdown" class="form-control"></select>
+                    <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                </div>
+
+                <!-- Dynamically Update the DropDownList -->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        // Function to populate the dropdown dynamically
+                        function populateDropdown() {
+                            var dropdown = $("#dynamicDropdown");
+                            dropdown.empty(); // Clear existing options
+
+                            // Fetch values from input fields
+                            ["#Answer1", "#Answer2", "#Answer3", "#Answer4"].forEach(function (id) {
+                                var value = $(id).val();
+                                if (value) {
+                                    dropdown.append(new Option(value, value));
+                                }
+                            });
+                        }
+
+                        // Update dropdown whenever an input value changes
+                        $("input").on("input", populateDropdown);
+
+                        // Initial population of dropdown
+                        populateDropdown();
+                    });
+                </script>
+            </div>
+            <div id="trueFalseDiv" style="display:none;">
+                <div class="form-group mt-2">
+                    <label asp-for="CorrectAnswer" class="control-label"></label>
+                    
+                    @Html.DropDownListFor(m => m.CorrectAnswer, new SelectList(answerOptionsTF), "Choose Correct Answer", new { @class = "form-control" })
+
+                    <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                </div>
+            </div>
+            <div id="shortAnswerDiv" style="display:block;">
+                <div class="form-group mt-2">
+                    <label for="shortAnswer" class="control-label">Correct Answer</label>
+                    <input class="form-control" type="text" id="shortAnswer" name="shortAnswer"/>
+                    <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group text-center mt-3">
+                <a asp-action="MyQuizzes" asp-controller="Quiz" class="btn btn-warn me-2">Cancel</a>
+                <input type="submit" value="Add" class="btn btn-main" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.getElementById("questionType").addEventListener("change", function() {
+            var selectedType = this.value;
+            document.getElementById("multipleChoiceDiv").style.display = (selectedType === "Multiple Choice") ? "block" : "none";
+            document.getElementById("trueFalseDiv").style.display = (selectedType === "True/False") ? "block" : "none";
+            document.getElementById("shortAnswerDiv").style.display = (selectedType === "Short Answer") ? "block" : "none";
+        });
+    </script>
+}

@@ -12,12 +12,10 @@ namespace LogicLayer
 {
     public interface IQuestionManager
     {
-        List<Question> GetAllQuestionsByQuizID(int quizID);
-        bool AddNewQuizQuestion(string questionTypeID, int quizID, string prompt, string answer1,
-                string answer2, string answer3, string answer4, string correctAnswer);
-        bool EditQuestionInformation(int questionID, string newQuestionTypeID, int quizID, string newPrompt,
-                        string newAnswer1, string newAnswer2, string newAnswer3, string newAnswer4,
-                        string newCorrectAnswer, bool newActive);
-        List<Question> GetActiveQuestionsByQuizID(int quizID);
+        List<QuestionVM> GetAllQuestionsByQuizID(int quizID);
+        bool AddNewQuizQuestion(Question question);
+        bool EditQuestionInformation(Question question);
+        List<QuestionVM> GetActiveQuestionsByQuizID(int quizID);
+        QuestionVM GetQuestionByID(int questionID);
     }
 }

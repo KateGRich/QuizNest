@@ -1,0 +1,102 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+header {
+    background-color: #FFFFFF;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: honeydew;
+}
+
+h1 {
+    text-align: center;
+}
+
+.main-content {
+    align-content: center;
+}
+
+.btn-main {
+    background-color: #FF5C00;
+    color: #FFFFFF;
+}
+.btn-main:hover, .btn-main:active {
+    background-color: #C84800;
+    color: #FFFFFF;
+}
+
+.btn-second {
+    background-color: #1069D4;
+    color: #FFFFFF;
+}
+.btn-second:hover, .btn-second:active {
+    background-color: #063F83;
+    color: #FFFFFF;
+}
+
+.btn-third {
+    background-color: #00D49A;
+    color: #FFFFFF;
+}
+.btn-third:hover, .btn-third:active {
+    background-color: #00835F;
+    color: #FFFFFF;
+}
+
+.btn-warn {
+    background-color: #FF9C00;
+    color: #FFFFFF;
+}
+.btn-warn:hover, .btn-warn:active {
+    background-color: #C87A00;
+    color: #FFFFFF;
+}
+
+
+/* Logo Styles */
+.nav-logo {
+    height: 3.5em;
+    margin-left: 20%;
+}
+
+/* Main Image Styles */
+img.main-img {
+    width: 100%;
+}
+div.carousel-caption {
+    margin: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+div.carousel-caption > p.opacity-75 {
+    margin-top: 16em;
+}
+.opacity-75 {
+    margin-left: 10em;
+    margin-right: 10em;
+}
+
+table {
+    margin-top: 2.5em;
+}

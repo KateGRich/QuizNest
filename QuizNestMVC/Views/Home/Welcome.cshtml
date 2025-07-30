@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+@* <main class="container"> *@
+    <div id="myBackground">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/images/QuizNest_Carousel.png" alt="Cozy valley with a lake" class="main-img img-fluid"/>
+                <div class="container">
+                    <div class="carousel-caption">
+                        @if(ViewBag.Name != " !")
+                        {
+                            @if(ViewBag.Name != null) {
+                                <h1 class="display-4">Welcome back to QuizNest, @ViewBag.Name</h1>
+                                <p class="opacity-75">
+                                    Let's continue your quiz journey!
+                                    <br />
+                                    Get cozy & quiz on!!
+                                </p>
+                                <p style="margin-top: 10%;">
+                                    @if (User.IsInRole("Quiz Maker"))
+                                    {
+                                        @Html.ActionLink("All Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-main m-4" })
+                                        @Html.ActionLink("Your Quizzes", "MyQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-second m-4" })
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("All Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-main" })
+                                    }
+                                </p>
+                                <p class="mt-4">
+                                    @if (User.IsInRole("Quiz Taker"))
+                                    {
+                                        @Html.ActionLink("Surprise Me!", "SurpriseMe", "Quiz", null, new { @class = "btn btn-lg btn-third" })
+                                    }
+                                </p>
+                            }
+                            else
+                            {
+                                <h1 class="display-4">Welcome to QuizNest!</h1>
+                                <p class="opacity-75" style="margin-left: 20%; margin-right: 20%;">
+                                    Are you a smarty pants? Do you like to take quizzes to prove how smart your pants are??
+                                    Well, you've come to the right place!
+                                    <br />
+                                    Get cozy &amp; let your quiz journey begin!
+                                </p>
+                                <p style="margin-top: 10%;">
+                                    @Html.ActionLink("View Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-main" })
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <h1 class="display-4">Welcome to QuizNest!</h1>
+                            <p class="opacity-75">
+                                Let's continue your quiz journey!
+                                <br />
+                                Get cozy & quiz on!!
+                            </p>
+                            <p style="margin-top: 10%;">
+                                @if (User.IsInRole("Quiz Maker"))
+                                {
+                                    @Html.ActionLink("All Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-main m-4" })
+                                    @Html.ActionLink("Your Quizzes", "MyQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-second m-4" })
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("All Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-lg btn-main" })
+                                }
+                            </p>
+                            <p class="mt-4">
+                                @if (User.IsInRole("Quiz Taker"))
+                                {
+                                    @Html.ActionLink("Surprise Me!", "SurpriseMe", "Quiz", null, new { @class = "btn btn-lg btn-third" })
+                                }
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@* </main> *@
+
+@* <div class="text-center"> *@
+@*     @if(ViewBag.Name != " !" && ViewBag.Name != null) *@
+@*     { *@
+@*         <h1 class="display-4">Welcome back to QuizNest, @ViewBag.Name</h1> *@
+@*     } *@
+@*     else *@
+@*     { *@
+@*         <h1 class="display-4">Welcome to QuizNest!</h1> *@
+@*     } *@
+@* </div> *@
+
+@* <div class="row"> *@
+
+@*     <div class="col-md-4 justify-self-center"> *@
+@*     </div> *@
+@* </div> *@

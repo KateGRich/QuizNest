@@ -11,5 +11,10 @@ namespace LogicLayer
     {
         List<ChatVM> GetStartedChats(int userID);
         List<ChatVM> GetReceivedChats(int userID);
+        List<ChatType> GetAllChatTypes();
+        List<User> GetAllAdmins();
+        bool AddNewChat(ChatVM chat);
+        List<MessageVM> GetMessagesByChatID(int chatID);
+        bool AddNewMessage(Message message);
     }
 }

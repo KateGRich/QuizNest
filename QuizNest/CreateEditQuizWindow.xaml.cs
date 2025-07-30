@@ -167,24 +167,32 @@ namespace QuizNestPresentation
                     }
 
                     // Assign the new values, once validated.
-                    string newQuizTopicID = cboQuizTopic.Text;
-                    string newName = txtQuizName.Text;
-                    string newDescription = txtQuizDescription.Text;
+                    Quiz newQuiz = new Quiz()
+                    {
+                        QuizID = _quiz.QuizID,
+                        QuizTopicID = cboQuizTopic.Text,
+                        Name = txtQuizName.Text,
+                        Description = txtQuizDescription.Text,
+                        Active = chkActive.IsChecked == false ? false : true
+                    };
+                    //string newQuizTopicID = cboQuizTopic.Text;
+                    //string newName = txtQuizName.Text;
+                    //string newDescription = txtQuizDescription.Text;
 
-                    bool newActive;
-                    if(chkActive.IsChecked == false)
-                    {
-                        newActive = false;
-                    }
-                    else
-                    {
-                        newActive = true;
-                    }
+                    //bool newActive;
+                    //if(chkActive.IsChecked == false)
+                    //{
+                    //    newActive = false;
+                    //}
+                    //else
+                    //{
+                    //    newActive = true;
+                    //}
 
                     // Save the updates.
                     try
                     {
-                        bool editResult = _quizManager.EditQuizInformation(_quiz.QuizID, newQuizTopicID, newName, newDescription, newActive);
+                        bool editResult = _quizManager.EditQuizInformation(_quiz, newQuiz);
                         if(editResult == false)
                         {
                             throw new Exception("Update Failed...");
@@ -225,24 +233,32 @@ namespace QuizNestPresentation
             }
 
             // Assign the new values, once validated.
-            string newQuizTopicID = cboQuizTopic.Text;
-            string newName = txtQuizName.Text;
-            string newDescription = txtQuizDescription.Text;
+            Quiz newQuiz = new Quiz()
+            {
+                QuizID = _quiz.QuizID,
+                QuizTopicID = cboQuizTopic.Text,
+                Name = txtQuizName.Text,
+                Description = txtQuizDescription.Text,
+                Active = chkActive.IsChecked == false ? false : true
+            };
+            //string newQuizTopicID = cboQuizTopic.Text;
+            //string newName = txtQuizName.Text;
+            //string newDescription = txtQuizDescription.Text;
 
-            bool newActive;
-            if(chkActive.IsChecked == false)
-            {
-                newActive = false;
-            }
-            else
-            {
-                newActive = true;
-            }
+            //bool newActive;
+            //if(chkActive.IsChecked == false)
+            //{
+            //    newActive = false;
+            //}
+            //else
+            //{
+            //    newActive = true;
+            //}
 
             // Save the updates.
             try
             {
-                bool result = _quizManager.EditQuizInformation(_quiz.QuizID, newQuizTopicID, newName, newDescription, newActive);
+                bool result = _quizManager.EditQuizInformation(_quiz, newQuiz);
                 if(result == false)
                 {
                     throw new Exception("Update Failed...");

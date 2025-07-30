@@ -1,0 +1,58 @@
+﻿@model IEnumerable<DataDomain.UserVM>
+
+@{
+    ViewData["Title"] = "All Users";
+
+    var _accessToken = ViewBag.AccessToken;
+}
+
+<h1>All Users</h1>
+<hr/>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleList)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Active)
+            </th>
+            <th class="col-md-3"></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach(var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoleList)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td class="col-md-3 text-center">
+                @if(item.UserID != _accessToken.UserID) {
+                    @Html.ActionLink("Details", "Details", new { id=item.UserID }, new { @class = "btn btn-sm btn-second me-2" })
+                    @Html.ActionLink("Edit", "Edit", new { id=item.UserID }, new { @class = "btn btn-sm btn-warn" })
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Create" class="btn btn-main">Create New User Account</a>
+</div>

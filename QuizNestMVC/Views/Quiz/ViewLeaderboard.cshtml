@@ -1,0 +1,74 @@
+﻿@model IEnumerable<DataDomain.QuizRecordVM>
+
+@{
+    ViewData["Title"] = "Leaderboard";
+
+    var _quizName = ViewBag.QuizName;
+    var _quizID = ViewBag.QuizID;
+}
+
+<h1>@_quizName - Leaderboard</h1>
+<hr/>
+
+@if(Model.Count() == 0)
+{
+    <div class="text-center">
+        <h3>
+            No one has taken this quiz yet...
+        </h3>
+        @if(User.IsInRole("Quiz Taker"))
+        {
+            @Html.ActionLink("Be the First!", "TakeQuiz", "Question", new { id = _quizID, questionNumber = 1, attemptType = "First"}, new { @class = "btn btn-main" })
+        }
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Place)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FormattedScore)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AttemptTypeID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FormattedDate)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Place)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FormattedScore)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AttemptTypeID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FormattedDate)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        @Html.ActionLink("Back to Quizzes", "AllQuizzes", "Quiz", null, new { @class = "btn btn-main" })
+    </div>
+}

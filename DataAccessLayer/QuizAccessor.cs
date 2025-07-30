@@ -166,7 +166,7 @@ namespace DataAccessLayer
             return questionTypes;
         }
 
-        public int InsertNewQuizTopic(string quizTopic, string description)
+        public int InsertNewQuizTopic(QuizTopic quizTopic)
         {
             int result = 0;
 
@@ -175,8 +175,8 @@ namespace DataAccessLayer
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@QuizTopicID", SqlDbType.NVarChar, 50);
             cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 250);
-            cmd.Parameters["@QuizTopicID"].Value = quizTopic;
-            cmd.Parameters["@Description"].Value = description;
+            cmd.Parameters["@QuizTopicID"].Value = quizTopic.QuizTopicID;
+            cmd.Parameters["@Description"].Value = quizTopic.Description;
             try
             {
                 conn.Open();
@@ -194,7 +194,7 @@ namespace DataAccessLayer
             return result;
         }
 
-        public int InsertNewQuiz(string quizTopicID, string name, int userID, string description)
+        public int InsertNewQuiz(Quiz quiz)
         {
             int newQuizID = 0;
 
@@ -205,10 +205,10 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 50);
             cmd.Parameters.Add("@CreatedBy", SqlDbType.Int);
             cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 250);
-            cmd.Parameters["@QuizTopicID"].Value = quizTopicID;
-            cmd.Parameters["@Name"].Value = name;
-            cmd.Parameters["@CreatedBy"].Value = userID;
-            cmd.Parameters["@Description"].Value = description;
+            cmd.Parameters["@QuizTopicID"].Value = quiz.QuizTopicID;
+            cmd.Parameters["@Name"].Value = quiz.Name;
+            cmd.Parameters["@CreatedBy"].Value = quiz.CreatedBy;
+            cmd.Parameters["@Description"].Value = quiz.Description;
             try
             {
                 conn.Open();
@@ -227,7 +227,7 @@ namespace DataAccessLayer
             return newQuizID;
         }
 
-        public int UpdateQuizInformation(int quizID, string newQuizTopicID, string newName, string newDescription, bool newActive)
+        public int UpdateQuizInformation(Quiz quiz, Quiz newQuiz)
         {
             int result = 0;
 
@@ -241,11 +241,11 @@ namespace DataAccessLayer
             cmd.Parameters.Add("@newDescription", SqlDbType.NVarChar, 250);
             cmd.Parameters.Add("@newActive", SqlDbType.Bit);
 
-            cmd.Parameters["@QuizID"].Value = quizID;
-            cmd.Parameters["@newQuizTopicID"].Value = newQuizTopicID;
-            cmd.Parameters["@newName"].Value = newName;
-            cmd.Parameters["@newDescription"].Value = newDescription;
-            cmd.Parameters["@newActive"].Value = newActive;
+            cmd.Parameters["@QuizID"].Value = quiz.QuizID;
+            cmd.Parameters["@newQuizTopicID"].Value = newQuiz.QuizTopicID;
+            cmd.Parameters["@newName"].Value = newQuiz.Name;
+            cmd.Parameters["@newDescription"].Value = newQuiz.Description;
+            cmd.Parameters["@newActive"].Value = newQuiz.Active;
 
             try
             {
@@ -285,11 +285,12 @@ namespace DataAccessLayer
                     {
                         QuizID = reader.GetInt32(0),
                         QuizTopicID = reader.GetString(1),
-                        Name = reader.GetString(2),
-                        CreatedBy = reader.GetInt32(3),
-                        Description = reader.GetString(4),
-                        CreatedOn = reader.GetDateTime(5),
-                        Active = reader.GetBoolean(6)
+                        QuizTopicDescription = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        Name = reader.GetString(3),
+                        CreatedBy = reader.GetInt32(4),
+                        Description = reader.GetString(5),
+                        CreatedOn = reader.GetDateTime(6),
+                        Active = reader.GetBoolean(7)
                     };
                 }
                 else
@@ -303,6 +304,28 @@ namespace DataAccessLayer
             }
 
             return quiz;
+        }
+
+        public int SelectCountOfActiveQuestionsByQuiz(int quizID)
+        {
+            int count = 0;
+
+            var conn = DBConnection.GetConnection();
+            var cmd = new SqlCommand("sp_select_count_of_active_questions_by_quiz", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@QuizID", SqlDbType.Int);
+            cmd.Parameters["@QuizID"].Value = quizID;
+            try
+            {
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                count = Convert.ToInt32(result);
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("No Questions Found...", ex);
+            }
+            return count;
         }
     }
 }
